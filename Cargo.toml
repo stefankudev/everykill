@@ -6,3 +6,4 @@ description = "The CLI tool to kill all dependency folders. No, really - all of 
 license = "MIT"
 
 [dependencies]
+crossterm = "0.27"

@@ -1,3 +1,6 @@
+pub mod ui;
+
 pub fn run() {
-    println!("Hello, world!");
+    let width = ui::get_terminal_width();
+    ui::print_centered_art(width);
 }
