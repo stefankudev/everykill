@@ -94,14 +94,14 @@ everykill/
 
 ### Planned CLI Flags
 
-| Flag | Description |
-|------|-------------|
-| `--all` | Scan all ecosystems |
-| `--lang <name>` | Filter to specific ecosystem(s) |
-| `--path <dir>` | Specify root directory to scan (default: current dir) |
-| `--dry-run` | Preview what would be deleted (default: true) |
-| `--delete` | Actually perform deletion |
-| `--size` | Show folder sizes in output |
+| Flag            | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| `--all`         | Scan all ecosystems                                   |
+| `--lang <name>` | Filter to specific ecosystem(s)                       |
+| `--path <dir>`  | Specify root directory to scan (default: current dir) |
+| `--dry-run`     | Preview what would be deleted (default: true)         |
+| `--delete`      | Actually perform deletion                             |
+| `--size`        | Show folder sizes in output                           |
 
 ### Planned UI Flow
 
@@ -114,27 +114,27 @@ everykill/
 
 ## Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| Per-ecosystem JSON files | Easy contribution without code changes |
-| Rust | Single binary, no runtime needed, fast |
-| Ratatui for TUI | Full keyboard/mouse support, npkill-style |
-| Pre-compiled ASCII art | No runtime generation needed |
-| 10 ASCII art widths | 25-250 cols in 25-col increments |
-| `assets/` for fonts | External assets live here (may be removed later) |
-| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion |
+| Decision                       | Rationale                                        |
+| ------------------------------ | ------------------------------------------------ |
+| Per-ecosystem JSON files       | Easy contribution without code changes           |
+| Rust                           | Single binary, no runtime needed, fast           |
+| Ratatui for TUI                | Full keyboard/mouse support, npkill-style        |
+| Pre-compiled ASCII art         | No runtime generation needed                     |
+| 10 ASCII art widths            | 25-250 cols in 25-col increments                 |
+| `assets/` for fonts            | External assets live here (may be removed later) |
+| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion                       |
 
 ## CI/CD & Distribution
 
 ### Publishing Targets
 
-| Platform | Method | Status |
-|----------|--------|--------|
-| crates.io | `cargo publish` | Planned |
-| GitHub Releases | Pre-built binaries (x86, ARM, musl) | Planned |
-| Homebrew | Tap repo + formula | Planned |
-| AUR (Arch Linux) | User-contributed | Planned |
-| Windows | winget, scoop | Future |
+| Platform         | Method                              | Status  |
+| ---------------- | ----------------------------------- | ------- |
+| crates.io        | `cargo publish`                     | Planned |
+| GitHub Releases  | Pre-built binaries (x86, ARM, musl) | Planned |
+| Homebrew         | Tap repo + formula                  | Planned |
+| AUR (Arch Linux) | User-contributed                    | Planned |
+| Windows          | winget, scoop                       | Future  |
 
 ### Pipeline
 
