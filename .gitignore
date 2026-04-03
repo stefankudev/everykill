@@ -13,3 +13,6 @@ Thumbs.db
 
 # Editor backups
 *~
+
+# Temporary Assets
+/assets/temp
