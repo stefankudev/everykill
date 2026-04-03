@@ -1,6 +1,8 @@
 [package]
 name = "everykill"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "The CLI tool to kill all dependency folders. No, really - all of them."
+license = "MIT"
 
 [dependencies]
