@@ -1,0 +1,5 @@
+{
+  "name": "Unreal Engine",
+  "local": ["Binaries/", "Intermediate/", "DerivedDataCache/"],
+  "global": []
+}

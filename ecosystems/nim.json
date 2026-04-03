@@ -1,0 +1,5 @@
+{
+  "name": "Nim",
+  "local": ["nimcache/"],
+  "global": ["~/.nimble/pkgs/"]
+}

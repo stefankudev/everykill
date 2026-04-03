@@ -1,0 +1,5 @@
+{
+  "name": "Angular",
+  "local": ["node_modules/"],
+  "global": []
+}

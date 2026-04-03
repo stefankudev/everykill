@@ -1,0 +1,5 @@
+{
+  "name": "Helm",
+  "local": ["charts/"],
+  "global": ["~/.cache/helm/"]
+}

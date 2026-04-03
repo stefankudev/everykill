@@ -1,0 +1,5 @@
+{
+  "name": "Lua",
+  "local": ["lua_modules/", "luarocks/"],
+  "global": ["~/.luarocks/"]
+}

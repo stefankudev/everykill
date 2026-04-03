@@ -1,0 +1,5 @@
+{
+  "name": "Ansible",
+  "local": ["roles/", "collections/"],
+  "global": ["~/.ansible/collections/"]
+}

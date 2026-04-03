@@ -1,0 +1,5 @@
+{
+  "name": "Cache",
+  "local": [".cache/", "tmp/", "temp/"],
+  "global": ["~/.cache/"]
+}

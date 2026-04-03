@@ -1,0 +1,5 @@
+{
+  "name": "Python",
+  "local": ["venv/", ".venv/", "env/", "__pycache__/"],
+  "global": ["~/.local/lib/python*/site-packages/"]
+}

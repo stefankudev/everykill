@@ -1,0 +1,5 @@
+{
+  "name": "R",
+  "local": ["renv/library/", ".Rproj.user/"],
+  "global": ["~/R/library/"]
+}

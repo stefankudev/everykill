@@ -1,0 +1,5 @@
+{
+  "name": "Terraform",
+  "local": [".terraform/"],
+  "global": ["~/.terraform.d/plugin-cache/"]
+}

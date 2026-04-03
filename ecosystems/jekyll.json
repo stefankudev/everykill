@@ -1,0 +1,5 @@
+{
+  "name": "Jekyll",
+  "local": ["_site/"],
+  "global": []
+}

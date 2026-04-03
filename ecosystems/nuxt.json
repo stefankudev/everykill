@@ -1,0 +1,5 @@
+{
+  "name": "Nuxt",
+  "local": [".nuxt/", "node_modules/"],
+  "global": []
+}

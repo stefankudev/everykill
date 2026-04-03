@@ -1,0 +1,5 @@
+{
+  "name": "Zig",
+  "local": ["zig-cache/", "zig-out/"],
+  "global": []
+}

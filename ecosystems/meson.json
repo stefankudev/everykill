@@ -1,0 +1,5 @@
+{
+  "name": "Meson",
+  "local": ["meson-out/"],
+  "global": []
+}

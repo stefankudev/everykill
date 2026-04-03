@@ -1,0 +1,5 @@
+{
+  "name": "Unity",
+  "local": ["Library/", "Packages/", "obj/", "Temp/"],
+  "global": []
+}

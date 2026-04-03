@@ -1,0 +1,5 @@
+{
+  "name": "Svelte",
+  "local": ["node_modules/"],
+  "global": []
+}

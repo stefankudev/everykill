@@ -1,0 +1,5 @@
+{
+  "name": "F#",
+  "local": ["bin/", "obj/"],
+  "global": ["~/.nuget/packages/"]
+}

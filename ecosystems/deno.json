@@ -1,0 +1,5 @@
+{
+  "name": "Deno",
+  "local": [],
+  "global": ["~/.deno/"]
+}

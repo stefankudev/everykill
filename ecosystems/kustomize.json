@@ -1,0 +1,5 @@
+{
+  "name": "Kustomize",
+  "local": ["kustomize/"],
+  "global": []
+}

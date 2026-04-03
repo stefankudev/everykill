@@ -1,0 +1,5 @@
+{
+  "name": "Pulumi",
+  "local": [".pulumi/"],
+  "global": ["~/.pulumi/"]
+}

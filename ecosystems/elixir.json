@@ -1,0 +1,5 @@
+{
+  "name": "Elixir",
+  "local": ["_build/", "deps/"],
+  "global": ["~/.hex/"]
+}

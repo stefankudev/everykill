@@ -1,0 +1,5 @@
+{
+  "name": "Hugo",
+  "local": ["resources/_gen/", "public/"],
+  "global": []
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Vendored Dependencies",
+  "local": ["vendor/", "third_party/"],
+  "global": []
+}

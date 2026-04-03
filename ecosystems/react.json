@@ -1,0 +1,5 @@
+{
+  "name": "React",
+  "local": ["node_modules/"],
+  "global": []
+}

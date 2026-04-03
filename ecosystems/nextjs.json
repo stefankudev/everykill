@@ -1,0 +1,5 @@
+{
+  "name": "Next.js",
+  "local": [".next/", "node_modules/"],
+  "global": []
+}

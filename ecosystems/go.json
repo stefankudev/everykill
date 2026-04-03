@@ -1,0 +1,5 @@
+{
+  "name": "Go",
+  "local": ["vendor/"],
+  "global": ["~/go/pkg/mod/"]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Carthage",
+  "local": ["Carthage/Build/"],
+  "global": ["~/Library/Caches/carthage/"]
+}

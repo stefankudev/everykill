@@ -1,0 +1,5 @@
+{
+  "name": "Julia",
+  "local": ["deps/"],
+  "global": ["~/.julia/packages/", "~/.julia/artifacts/"]
+}

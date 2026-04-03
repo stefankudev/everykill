@@ -1,0 +1,5 @@
+{
+  "name": "CMake",
+  "local": ["CMakeFiles/", "cmake-files/", "_deps/"],
+  "global": []
+}
