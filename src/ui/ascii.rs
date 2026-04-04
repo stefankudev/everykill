@@ -1,15 +1,15 @@
 pub fn get_ascii_art(terminal_width: u16) -> &'static str {
     match terminal_width {
-        0..=25 => include_str!("../../ascii/width_025.txt"),
-        26..=50 => include_str!("../../ascii/width_050.txt"),
-        51..=75 => include_str!("../../ascii/width_075.txt"),
-        76..=100 => include_str!("../../ascii/width_100.txt"),
-        101..=125 => include_str!("../../ascii/width_125.txt"),
-        126..=150 => include_str!("../../ascii/width_150.txt"),
-        151..=175 => include_str!("../../ascii/width_175.txt"),
-        176..=200 => include_str!("../../ascii/width_200.txt"),
-        201..=225 => include_str!("../../ascii/width_225.txt"),
-        _ => include_str!("../../ascii/width_250.txt"),
+        0..=25 => include_str!("../../assets/ascii/w_025_h_003.txt"),
+        26..=50 => include_str!("../../assets/ascii/w_050_h_004.txt"),
+        51..=75 => include_str!("../../assets/ascii/w_075_h_005.txt"),
+        76..=100 => include_str!("../../assets/ascii/w_100_h_006.txt"),
+        101..=125 => include_str!("../../assets/ascii/w_125_h_006.txt"),
+        126..=150 => include_str!("../../assets/ascii/w_150_h_007.txt"),
+        151..=175 => include_str!("../../assets/ascii/w_175_h_007.txt"),
+        176..=200 => include_str!("../../assets/ascii/w_200_h_008.txt"),
+        201..=225 => include_str!("../../assets/ascii/w_225_h_008.txt"),
+        _ => include_str!("../../assets/ascii/w_250_h_008.txt"),
     }
 }
 
