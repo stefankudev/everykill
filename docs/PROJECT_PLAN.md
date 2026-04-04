@@ -65,7 +65,7 @@ pub struct AppState {
 
 ## Implementation Phases
 
-### Phase 1: Ecosystem Loading
+### ✅ Phase 1: Ecosystem Loading (IMPLEMENTED)
 
 **File:** `src/config/ecosystem.rs`
 
@@ -87,7 +87,7 @@ impl Ecosystem {
 - Cache ecosystems in `HashMap<String, Ecosystem>` for O(1) lookup by name
 - Lazy load: only load when needed (e.g., `--lang rust` loads only rust.json)
 
-### Phase 2: Directory Scanning
+### ✅ Phase 2: Directory Scanning (IMPLEMENTED)
 
 **File:** `src/scanner/dir.rs`
 
@@ -112,7 +112,7 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
 - Don't calculate sizes during scan - just collect paths first
 - Skip duplicate folders (same inode) to avoid counting symlinked directories twice
 
-### Phase 3: Size Calculation
+### ✅ Phase 3: Size Calculation (IMPLEMENTED)
 
 **File:** `src/scanner/size.rs`
 
@@ -281,13 +281,13 @@ All errors should be:
 
 ## Testing Strategy
 
-| Component         | Test Approach                                 |
-| ----------------- | --------------------------------------------- |
-| Ecosystem loading | Load all JSONs, verify parse                  |
-| Pattern matching  | Unit tests with known folder names            |
-| Size calculation  | Use temp dirs with known sizes                |
-| Deletion          | Create temp dirs, delete, verify removal      |
-| UI                | Manual testing only (ratatui is hard to test) |
+| Component         | Test Approach                                 | Status |
+| ----------------- | --------------------------------------------- | ------ |
+| Ecosystem loading | Load all JSONs, verify parse                  | Done   |
+| Pattern matching  | Unit tests with known folder names            | Done   |
+| Size calculation  | Use temp dirs with known sizes                | Done   |
+| Deletion          | Create temp dirs, delete, verify removal      | Planned |
+| UI                | Manual testing only (ratatui is hard to test) | Planned |
 
 ## Decisions
 

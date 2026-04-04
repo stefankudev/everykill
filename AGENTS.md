@@ -40,6 +40,13 @@ everykill/
 ├── src/                  # Rust source
 │   ├── main.rs           # Binary entry point
 │   ├── lib.rs            # Library entry, calls ui::run()
+│   ├── config/           # Configuration & ecosystem loading
+│   │   ├── mod.rs
+│   │   └── ecosystem.rs  # Ecosystem struct, loading, pattern matching
+│   ├── scanner/          # Directory scanning & size calculation
+│   │   ├── mod.rs
+│   │   ├── dir.rs        # Directory traversal
+│   │   └── size.rs       # Parallel size calculation
 │   └── ui/               # TUI components
 │       ├── mod.rs        # Module exports
 │       └── ascii.rs      # ASCII art selection & rendering
@@ -63,6 +70,24 @@ everykill/
 #### `src/main.rs` & `src/lib.rs`
 - Entry point pattern: `main.rs` calls `everykill::run()`
 - All business logic in library for testability
+
+#### `src/config/ecosystem.rs`
+- `Ecosystem` struct with `name`, `local`, `global` fields
+- `DiscoveredFolder` struct with `path`, `ecosystem`, `size_bytes`, `selected`
+- `load_ecosystems()` - loads all ecosystems from `ecosystems/*.json`
+- `load_ecosystem(name)` - lazy load single ecosystem
+- `Ecosystem::matches_folder()` - pattern matching for folder names
+
+#### `src/scanner/dir.rs`
+- `scan_directory(root, ecosystems)` - walks directory tree, finds matching folders
+- Uses `walkdir` for traversal
+- Skips hidden dirs (`.git/`, `.svn/`, `.hg/`)
+- Skips `.cache` directories
+- Tracks inodes to avoid duplicates
+
+#### `src/scanner/size.rs`
+- `calculate_size(path)` - recursive folder size calculation
+- `calculate_sizes(folders)` - parallel size calculation using `rayon`
 
 #### `src/ui/ascii.rs`
 - `get_ascii_art(terminal_width)` - selects appropriate art based on terminal size
@@ -106,15 +131,16 @@ everykill/
 
 ## Design Decisions
 
-| Decision                       | Rationale                                        |
-| ------------------------------ | ------------------------------------------------ |
-| Per-ecosystem JSON files       | Easy contribution without code changes           |
-| Rust                           | Single binary, no runtime needed, fast           |
-| Ratatui for TUI                | Full keyboard/mouse support, npkill-style        |
-| Pre-compiled ASCII art         | No runtime generation needed                     |
-| 10 ASCII art widths            | 25-250 cols in 25-col increments                 |
-| `assets/` for fonts            | External assets live here (may be removed later) |
-| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion                       |
+| Decision                       | Rationale                                        | Status |
+| ------------------------------ | ------------------------------------------------ | ------ |
+| Per-ecosystem JSON files       | Easy contribution without code changes           | Done   |
+| Rust                           | Single binary, no runtime needed, fast           | Done   |
+| Ratatui for TUI                | Full keyboard/mouse support, npkill-style        | Planned |
+| Parallel scanning with rayon   | Fast directory traversal                         | Done   |
+| Skip hidden dirs (.git, etc.)  | Avoid scanning version control                    | Done   |
+| Size calculation after scan    | Separate phases for clarity                       | Done   |
+| Pre-compiled ASCII art         | No runtime generation needed                     | Done   |
+| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion                       | Done   |
 
 ## CI/CD & Distribution
 
@@ -191,13 +217,13 @@ git commit -m "style(ui): center ASCII art banner"
 
 High-level TODO (detail to be added as development progresses):
 
-- [ ] Implement directory scanner module
-- [ ] Implement ecosystem JSON loader
+- [x] Implement directory scanner module
+- [x] Implement ecosystem JSON loader
+- [x] Add folder size calculation
 - [ ] Implement TUI with ratatui
 - [ ] Add keyboard navigation (arrows, space, enter)
 - [ ] Add deletion logic with confirmation
 - [ ] Add CLI args via clap
-- [ ] Add folder size calculation
 - [ ] Create actual ASCII art for each width
 - [ ] Implement --dry-run flag
 - [ ] Implement --lang filter
