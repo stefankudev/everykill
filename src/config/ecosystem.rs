@@ -12,8 +12,13 @@ pub struct Ecosystem {
 
 impl Ecosystem {
     pub fn matches_folder(&self, folder_name: &str) -> bool {
-        self.local.iter().any(|p| match_folder_pattern(p, folder_name))
-            || self.global.iter().any(|p| match_folder_pattern(p, folder_name))
+        self.local
+            .iter()
+            .any(|p| match_folder_pattern(p, folder_name))
+            || self
+                .global
+                .iter()
+                .any(|p| match_folder_pattern(p, folder_name))
     }
 }
 
@@ -61,10 +66,10 @@ pub fn load_ecosystem(name: &str) -> anyhow::Result<Ecosystem> {
 }
 
 fn load_ecosystem_from_path(path: &Path) -> anyhow::Result<Ecosystem> {
-    let content = std::fs::read_to_string(path)
-        .with_context(|| format!("failed to read {:?}", path))?;
-    let ecosystem: Ecosystem = serde_json::from_str(&content)
-        .with_context(|| format!("failed to parse {:?}", path))?;
+    let content =
+        std::fs::read_to_string(path).with_context(|| format!("failed to read {:?}", path))?;
+    let ecosystem: Ecosystem =
+        serde_json::from_str(&content).with_context(|| format!("failed to parse {:?}", path))?;
     Ok(ecosystem)
 }
 

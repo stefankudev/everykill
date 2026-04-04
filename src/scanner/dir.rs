@@ -2,13 +2,7 @@ use crate::config::{DiscoveredFolder, Ecosystem};
 use std::collections::HashSet;
 use std::path::Path;
 
-const SKIP_DIRS: &[&str] = &[
-    ".git",
-    ".svn",
-    ".hg",
-    "node_modules/.cache",
-    ".cache",
-];
+const SKIP_DIRS: &[&str] = &[".git", ".svn", ".hg", "node_modules/.cache", ".cache"];
 
 pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFolder> {
     let mut folders = Vec::new();
@@ -23,7 +17,7 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
             Ok(entry) => {
                 if entry.file_type().is_dir() {
                     let file_name = entry.file_name().to_string_lossy();
-                    
+
                     for ecosystem in ecosystems {
                         if ecosystem.matches_folder(&file_name) {
                             if let Ok(inode) = get_inode(&entry.path()) {
@@ -32,7 +26,7 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
                                 }
                                 seen_inodes.insert(inode);
                             }
-                            
+
                             folders.push(DiscoveredFolder::new(
                                 entry.path().to_path_buf(),
                                 ecosystem.name.clone(),
@@ -85,18 +79,18 @@ mod tests {
     fn test_scan_finds_node_modules() {
         let temp_dir = TempDir::new().unwrap();
         let project_dir = temp_dir.path();
-        
+
         fs::create_dir_all(project_dir.join("some/path/node_modules")).unwrap();
         fs::write(project_dir.join("some/path/node_modules/.gitkeep"), "").unwrap();
-        
+
         let ecosystems = vec![Ecosystem {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
         }];
-        
+
         let folders = scan_directory(project_dir, &ecosystems);
-        
+
         assert!(!folders.is_empty());
         assert!(folders.iter().any(|f| f.path.ends_with("node_modules")));
         assert_eq!(folders[0].ecosystem, "Node.js");
@@ -106,38 +100,42 @@ mod tests {
     fn test_scan_skips_hidden_dirs() {
         let temp_dir = TempDir::new().unwrap();
         let project_dir = temp_dir.path();
-        
+
         fs::create_dir_all(project_dir.join(".git/node_modules")).unwrap();
         fs::create_dir_all(project_dir.join("node_modules")).unwrap();
-        
+
         let ecosystems = vec![Ecosystem {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
         }];
-        
+
         let folders = scan_directory(project_dir, &ecosystems);
-        
-        assert!(folders.iter().all(|f| !f.path.to_string_lossy().contains(".git")));
+
+        assert!(folders
+            .iter()
+            .all(|f| !f.path.to_string_lossy().contains(".git")));
     }
 
     #[test]
     fn test_scan_skips_node_modules_cache() {
         let temp_dir = TempDir::new().unwrap();
         let project_dir = temp_dir.path();
-        
+
         fs::create_dir_all(project_dir.join("node_modules/.cache")).unwrap();
-        
+
         let ecosystems = vec![Ecosystem {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
         }];
-        
+
         let folders = scan_directory(project_dir, &ecosystems);
-        
+
         assert_eq!(folders.len(), 1);
         assert!(folders[0].path.ends_with("node_modules"));
-        assert!(!folders.iter().any(|f| f.path.to_string_lossy().contains(".cache")));
+        assert!(!folders
+            .iter()
+            .any(|f| f.path.to_string_lossy().contains(".cache")));
     }
 }
