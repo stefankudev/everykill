@@ -6,4 +6,11 @@ description = "The CLI tool to kill all dependency folders. No, really - all of 
 license = "MIT"
 
 [dependencies]
+anyhow = "1.0"
 crossterm = "0.27"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+walkdir = "2.4"
+rayon = "1.8"
+glob = "0.3"
+tempfile = "3.10"
