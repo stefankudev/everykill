@@ -20,7 +20,7 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
 
                     for ecosystem in ecosystems {
                         if ecosystem.matches_folder(&file_name) {
-                            if let Ok(inode) = get_inode(&entry.path()) {
+                            if let Ok(inode) = get_inode(entry.path()) {
                                 if seen_inodes.contains(&inode) {
                                     continue;
                                 }
