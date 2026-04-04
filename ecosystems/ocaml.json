@@ -1,0 +1,5 @@
+{
+  "name": "OCaml",
+  "local": ["_opam/", "_build/"],
+  "global": ["~/.opam/"]
+}

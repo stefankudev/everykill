@@ -1,0 +1,5 @@
+{
+  "name": "Perl",
+  "local": ["local/lib/", "blib/"],
+  "global": ["~/.cpanm/"]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Remix",
+  "local": ["node_modules/", "build/"],
+  "global": []
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Swift",
+  "local": [".build/"],
+  "global": ["~/Library/Caches/org.swift.swiftpm/"]
+}

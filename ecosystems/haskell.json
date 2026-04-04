@@ -1,0 +1,5 @@
+{
+  "name": "Haskell",
+  "local": ["dist-newstyle/", ".stack-work/"],
+  "global": ["~/.stack/", "~/.cabal/"]
+}

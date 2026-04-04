@@ -1,0 +1,5 @@
+{
+  "name": "Rust",
+  "local": ["target/"],
+  "global": ["~/.cargo/registry/", "~/.cargo/git/"]
+}

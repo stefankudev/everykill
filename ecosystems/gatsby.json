@@ -1,0 +1,5 @@
+{
+  "name": "Gatsby",
+  "local": [".cache/", "public/"],
+  "global": []
+}

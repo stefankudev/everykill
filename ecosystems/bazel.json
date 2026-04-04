@@ -1,0 +1,5 @@
+{
+  "name": "Bazel",
+  "local": ["bazel-out/", "bazel-bin/", "bazel-testlogs/"],
+  "global": ["~/.cache/bazel/"]
+}

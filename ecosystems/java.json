@@ -1,0 +1,5 @@
+{
+  "name": "Java",
+  "local": ["target/"],
+  "global": ["~/.m2/repository/"]
+}

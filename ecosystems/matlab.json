@@ -1,0 +1,5 @@
+{
+  "name": "MATLAB",
+  "local": ["codegen/", "slprj/"],
+  "global": []
+}

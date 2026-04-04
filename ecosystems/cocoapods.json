@@ -1,0 +1,5 @@
+{
+  "name": "CocoaPods",
+  "local": ["Pods/"],
+  "global": ["~/Library/Caches/CocoaPods/"]
+}

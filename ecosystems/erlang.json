@@ -1,0 +1,5 @@
+{
+  "name": "Erlang",
+  "local": ["_build/", "deps/"],
+  "global": ["~/.erlang.mk/"]
+}

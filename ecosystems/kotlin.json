@@ -1,0 +1,5 @@
+{
+  "name": "Kotlin",
+  "local": [".gradle/", "build/"],
+  "global": ["~/.gradle/"]
+}

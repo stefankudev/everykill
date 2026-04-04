@@ -1,0 +1,5 @@
+{
+  "name": "Clojure",
+  "local": ["target/", ".cpcache/"],
+  "global": ["~/.clojure/"]
+}

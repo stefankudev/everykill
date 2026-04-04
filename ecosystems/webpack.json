@@ -1,0 +1,5 @@
+{
+  "name": "Webpack",
+  "local": ["node_modules/", "dist/"],
+  "global": []
+}

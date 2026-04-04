@@ -1,0 +1,5 @@
+{
+  "name": "Crystal",
+  "local": ["lib/", "shards/"],
+  "global": ["~/.cache/shards/"]
+}
