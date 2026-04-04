@@ -207,4 +207,4 @@ High-level TODO (detail to be added as development progresses):
 
 ## Reference
 
-See [ECOSYSTEMS.md](./ECOSYSTEMS.md) for complete list of supported ecosystems and their dependency paths.
+See [ECOSYSTEMS.md](./docs/ECOSYSTEMS.md) for complete list of supported ecosystems and their dependency paths.
