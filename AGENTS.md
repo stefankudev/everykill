@@ -47,17 +47,9 @@ everykill/
 │   ├── nodejs.json       # One file per ecosystem
 │   ├── rust.json
 │   └── ...               # ~60 ecosystem files total
-├── ascii/                # ASCII art for different terminal widths
-│   ├── width_025.txt     # 25 columns (smallest)
-│   ├── width_050.txt
-│   ├── width_075.txt
-│   ├── width_100.txt
-│   ├── width_125.txt
-│   ├── width_150.txt
-│   ├── width_175.txt
-│   ├── width_200.txt
-│   ├── width_225.txt
-│   └── width_250.txt     # 250 columns (largest)
+├── assets/ascii/         # ASCII art for different terminal widths
+│   ├── 44.txt            # 44 columns (smallest)
+│   └── 68.txt            # 68 columns (largest)
 ├── assets/fonts/         # Font files for ASCII art generation
 │   ├── bold-killer/
 │   ├── killer/
@@ -191,7 +183,7 @@ git commit -m "style(ui): center ASCII art banner"
 
 ### Adding ASCII Art for New Width
 
-1. Create or update `ascii/width_XXX.txt` with 6-line ASCII banner
+1. Create or update `assets/ascii/XXX.txt` with ASCII banner
 2. Update `src/ui/ascii.rs` match arms to include new width
 3. Commit with type `feat(ascii): add width XXX art`
 
