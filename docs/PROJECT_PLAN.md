@@ -10,7 +10,7 @@ Find and delete dependency folders across all ecosystems (Node.js, Rust, Python,
 2. ✅ **Directory scanning** - Find matching folders
 3. ✅ **Size calculation** - Parallel folder sizing
 4. ✅ **CLI arguments** - Filtering, sorting, path options
-5. ⬜ **Deletion** - Delete folders with confirmation
+5. ✅ **Deletion** - Delete folders with confirmation
 6. ⬜ **TUI** - Interactive terminal UI with ratatui
 
 ## Component Architecture
@@ -26,7 +26,7 @@ src/
 │   ├── dir.rs          # Directory traversal
 │   └── size.rs         # Parallel size calculation
 ├── size_util.rs        # Human-readable size formatting
-└── deleter.rs          # Deletion logic (planned)
+└── deleter.rs          # Deletion logic
 ```
 
 ## Implemented Features
@@ -40,6 +40,7 @@ src/
 | Depth control (`--depth`, `--no-recursive`) | ✅ |
 | Sort by size/path (`-s`) | ✅ |
 | Human-readable sizes (B → EB) | ✅ |
+| CLI deletion (`-D, --delete`) | ✅ |
 | Clippy linting | ✅ |
 
 ## CLI Flags
@@ -57,15 +58,16 @@ src/
 | `-f, --full` | Scan from home | `false` |
 | `-s, --sort <BY>` | Sort by size/path | None |
 | `-e, --show-errors` | Show errors | `false` |
+| `-D, --delete` | Delete found folders | `false` |
 
-## Next: Deletion
+## Deletion (IMPLEMENTED)
 
 **File:** `src/deleter.rs`
 
 ```rust
-pub fn delete_folders(folders: &[PathBuf], dry_run: bool) -> Result<DeleteSummary> {
-    // Simple deletion - takes folder list, returns summary
-    // No AppState needed - works standalone
+pub fn delete_folders(folders: &[DiscoveredFolder], dry_run: bool) -> DeleteSummary {
+    // Iterates folders, deletes selected ones
+    // Returns summary with count, freed bytes, errors
 }
 
 pub struct DeleteSummary {
@@ -75,7 +77,11 @@ pub struct DeleteSummary {
 }
 ```
 
-## Then: TUI with AppState
+## Next: TUI
+
+After CLI deletion is working, build the TUI for interactive selection:
+
+## TUI with AppState
 
 After standalone deletion is working, we build the TUI on top of AppState:
 
@@ -135,4 +141,4 @@ pub struct AppState {
 | Size calculation | ✅ |
 | CLI arguments | ✅ |
 | Size formatting | ✅ |
-| Deletion | Planned |
+| Deletion | ✅ |
