@@ -18,7 +18,5 @@ pub fn print_centered_art(terminal_width: u16) {
 }
 
 pub fn get_terminal_width() -> u16 {
-    crossterm::terminal::size()
-        .map(|(w, _)| w)
-        .unwrap_or(80)
+    crossterm::terminal::size().map(|(w, _)| w).unwrap_or(80)
 }
