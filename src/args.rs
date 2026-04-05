@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use crate::config::Ecosystem;
 
-#[derive(Debug, Clone, Parser)]
+#[derive(Debug, Clone, Default, Parser)]
 #[command(
     author,
     version,
@@ -53,6 +53,10 @@ pub struct Args {
     /// Show error messages
     #[arg(short = 'e', long = "show-errors")]
     pub show_errors: bool,
+
+    /// Delete selected folders
+    #[arg(short = 'D', long = "delete")]
+    pub delete: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
@@ -122,35 +126,24 @@ mod tests {
     #[test]
     fn test_get_excluded_dirs_none() {
         let args = Args {
-            path: PathBuf::from("."),
-            target: None,
-            all: false,
-            global: false,
-            exclude: None,
-            exclude_hidden: false,
-            no_recursive: false,
-            depth: None,
-            full: false,
-            sort: None,
-            show_errors: false,
+            ..Default::default()
         };
         assert!(args.get_excluded_dirs().is_empty());
     }
 
     #[test]
+    fn test_delete_flag_defaults_to_false() {
+        let args = Args {
+            ..Default::default()
+        };
+        assert!(!args.delete);
+    }
+
+    #[test]
     fn test_get_excluded_dirs_single() {
         let args = Args {
-            path: PathBuf::from("."),
-            target: None,
-            all: false,
-            global: false,
             exclude: Some("target".to_string()),
-            exclude_hidden: false,
-            no_recursive: false,
-            depth: None,
-            full: false,
-            sort: None,
-            show_errors: false,
+            ..Default::default()
         };
         assert_eq!(args.get_excluded_dirs(), vec!["target"]);
     }
@@ -158,17 +151,8 @@ mod tests {
     #[test]
     fn test_get_excluded_dirs_multiple() {
         let args = Args {
-            path: PathBuf::from("."),
-            target: None,
-            all: false,
-            global: false,
             exclude: Some("target,vendor,.next".to_string()),
-            exclude_hidden: false,
-            no_recursive: false,
-            depth: None,
-            full: false,
-            sort: None,
-            show_errors: false,
+            ..Default::default()
         };
         assert_eq!(args.get_excluded_dirs(), vec!["target", "vendor", ".next"]);
     }
@@ -176,17 +160,8 @@ mod tests {
     #[test]
     fn test_no_recursive_sets_depth_zero() {
         let args = Args {
-            path: PathBuf::from("."),
-            target: None,
-            all: false,
-            global: false,
-            exclude: None,
-            exclude_hidden: false,
             no_recursive: true,
-            depth: None,
-            full: false,
-            sort: None,
-            show_errors: false,
+            ..Default::default()
         };
         assert_eq!(args.get_depth_limit(), Some(0));
     }
@@ -194,17 +169,9 @@ mod tests {
     #[test]
     fn test_depth_takes_prescedence_over_no_recursive() {
         let args = Args {
-            path: PathBuf::from("."),
-            target: None,
-            all: false,
-            global: false,
-            exclude: None,
-            exclude_hidden: false,
-            no_recursive: true,
             depth: Some(3),
-            full: false,
-            sort: None,
-            show_errors: false,
+            no_recursive: true,
+            ..Default::default()
         };
         assert_eq!(args.get_depth_limit(), Some(3));
     }
