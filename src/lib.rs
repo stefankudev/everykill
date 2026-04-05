@@ -1,11 +1,13 @@
 pub mod args;
 pub mod config;
+pub mod deleter;
 pub mod scanner;
 pub mod size_util;
 pub mod ui;
 
 use args::Args;
 use clap::Parser;
+use deleter::{delete_folders, print_delete_summary};
 use size_util::format_size;
 
 pub fn run() {
@@ -44,12 +46,24 @@ pub fn run() {
 
     println!("Found {} dependency folders", folders.len());
 
-    for folder in &folders {
-        println!(
-            "  {} ({}) - {}",
-            folder.path.display(),
-            folder.ecosystem,
-            format_size(folder.size_bytes)
-        );
+    if args.delete {
+        let folders: Vec<_> = folders
+            .into_iter()
+            .map(|mut f| {
+                f.selected = true;
+                f
+            })
+            .collect();
+        let summary = delete_folders(&folders, false);
+        print_delete_summary(&summary);
+    } else {
+        for folder in &folders {
+            println!(
+                "  {} ({}) - {}",
+                folder.path.display(),
+                folder.ecosystem,
+                format_size(folder.size_bytes)
+            );
+        }
     }
 }
