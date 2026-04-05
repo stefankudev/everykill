@@ -21,7 +21,7 @@ cargo build --release
 cargo test
 
 # Run with specific args
-cargo run -- --all --dry-run
+everykill -t nodejs,rust -s size
 ```
 
 ## Project Overview
@@ -39,7 +39,8 @@ cargo run -- --all --dry-run
 everykill/
 ├── src/                  # Rust source
 │   ├── main.rs           # Binary entry point
-│   ├── lib.rs            # Library entry, calls ui::run()
+│   ├── lib.rs            # Library entry, calls run()
+│   ├── args.rs           # CLI argument parsing with clap
 │   ├── config/           # Configuration & ecosystem loading
 │   │   ├── mod.rs
 │   │   └── ecosystem.rs  # Ecosystem struct, loading, pattern matching
@@ -47,8 +48,9 @@ everykill/
 │   │   ├── mod.rs
 │   │   ├── dir.rs        # Directory traversal
 │   │   └── size.rs       # Parallel size calculation
-│   └── ui/               # TUI components
-│       ├── mod.rs        # Module exports
+│   ├── size_util.rs      # Size formatting utility
+│   └── ui/               # TUI components (planned)
+│       ├── mod.rs
 │       └── ascii.rs      # ASCII art selection & rendering
 ├── ecosystems/           # Language/ecosystem dependency definitions
 │   ├── nodejs.json       # One file per ecosystem
@@ -57,10 +59,7 @@ everykill/
 ├── assets/ascii/         # ASCII art for different terminal widths
 │   ├── 44.txt            # 44 columns (smallest)
 │   └── 68.txt            # 68 columns (largest)
-├── assets/fonts/         # Font files for ASCII art generation
-│   ├── bold-killer/
-│   ├── killer/
-│   └── killer-tech/
+├── clippy.toml           # Clippy lint configuration
 ├── Cargo.toml            # Rust package manifest
 └── Cargo.lock            # Dependency lock file
 ```
@@ -70,6 +69,12 @@ everykill/
 #### `src/main.rs` & `src/lib.rs`
 - Entry point pattern: `main.rs` calls `everykill::run()`
 - All business logic in library for testability
+- Uses `clap` for CLI argument parsing
+
+#### `src/args.rs`
+- `Args` struct derived from `clap::Parser`
+- Supports all CLI flags: `-d`, `-t`, `--all`, `-g`, `-E`, `-x`, `--depth`, `--no-recursive`, `-f`, `-s`, `-e`
+- Helper methods for filtering ecosystems, getting scan paths, etc.
 
 #### `src/config/ecosystem.rs`
 - `Ecosystem` struct with `name`, `local`, `global` fields
@@ -77,17 +82,23 @@ everykill/
 - `load_ecosystems()` - loads all ecosystems from `ecosystems/*.json`
 - `load_ecosystem(name)` - lazy load single ecosystem
 - `Ecosystem::matches_folder()` - pattern matching for folder names
+- `Ecosystem::matches_folder_with_globals()` - supports include_globals flag
 
 #### `src/scanner/dir.rs`
-- `scan_directory(root, ecosystems)` - walks directory tree, finds matching folders
+- `scan_directory()` - walks directory tree, finds matching folders
 - Uses `walkdir` for traversal
-- Skips hidden dirs (`.git/`, `.svn/`, `.hg/`)
-- Skips `.cache` directories
+- Supports exclude directories, exclude hidden, max depth parameters
+- Skips hidden dirs (`.git/`, `.svn/`, `.hg/`) and `.cache` directories
 - Tracks inodes to avoid duplicates
 
 #### `src/scanner/size.rs`
 - `calculate_size(path)` - recursive folder size calculation
 - `calculate_sizes(folders)` - parallel size calculation using `rayon`
+
+#### `src/size_util.rs`
+- `format_size(bytes)` - converts bytes to human-readable format (B, KB, MB, GB, TB, PB, EB)
+- `Size` struct with `value` and `unit`
+- Dynamic precision: 0 decimals (≥100), 1 decimal (≥10), 2 decimals (<10)
 
 #### `src/ui/ascii.rs`
 - `get_ascii_art(terminal_width)` - selects appropriate art based on terminal size
@@ -109,16 +120,23 @@ everykill/
 - `local` = per-project dependency folders (scanned from current directory)
 - `global` = user-level caches (typically not deleted by default)
 
-### Planned CLI Flags
+### CLI Flags
 
-| Flag            | Description                                           |
-| --------------- | ----------------------------------------------------- |
-| `--all`         | Scan all ecosystems                                   |
-| `--lang <name>` | Filter to specific ecosystem(s)                       |
-| `--path <dir>`  | Specify root directory to scan (default: current dir) |
-| `--dry-run`     | Preview what would be deleted (default: true)         |
-| `--delete`      | Actually perform deletion                             |
-| `--size`        | Show folder sizes in output                           |
+| Flag | Description | Default |
+| ---- |-------------|---------|
+| `-d, --directory <PATH>` | Directory to scan | `.` |
+| `-t, --target <LANGS>` | Ecosystems to scan (comma-separated) | All local |
+| `--all` | Include all ecosystems | `false` |
+| `-g, --global` | Include global/user-level caches | `false` |
+| `-E, --exclude <DIRS>` | Exclude directories by name (comma-separated) | None |
+| `-x, --exclude-hidden` | Exclude hidden directories | `false` |
+| `--no-recursive` | Don't scan subdirectories (alias for `--depth 0`) | `false` |
+| `--depth <N>` | Maximum directory depth | Unlimited |
+| `-f, --full` | Scan from home directory | `false` |
+| `-s, --sort <BY>` | Sort by `size` or `path` | None |
+| `-e, --show-errors` | Show error messages | `false` |
+| `-h, --help` | Show help | - |
+| `-v, --version` | Show version | - |
 
 ### Planned UI Flow
 
@@ -215,18 +233,16 @@ git commit -m "style(ui): center ASCII art banner"
 
 ## Roadmap
 
-High-level TODO (detail to be added as development progresses):
-
 - [x] Implement directory scanner module
 - [x] Implement ecosystem JSON loader
 - [x] Add folder size calculation
+- [x] Add CLI args via clap
+- [x] Add size formatting utility
+- [x] Add clippy linting configuration
 - [ ] Implement TUI with ratatui
 - [ ] Add keyboard navigation (arrows, space, enter)
 - [ ] Add deletion logic with confirmation
-- [ ] Add CLI args via clap
 - [ ] Create actual ASCII art for each width
-- [ ] Implement --dry-run flag
-- [ ] Implement --lang filter
 - [ ] Cross-platform testing (Windows)
 - [ ] Set up cargo-dist pipeline
 - [ ] First release
