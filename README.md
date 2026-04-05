@@ -24,7 +24,7 @@ cargo test
 ## Usage
 
 ```bash
-# Scan current directory
+# Scan current directory (list only, no deletion)
 cargo run
 
 # Scan specific directory
@@ -44,6 +44,9 @@ cargo run -- -s size
 
 # Don't scan subdirectories
 cargo run -- --no-recursive
+
+# Delete found folders (CAREFUL!)
+cargo run -- --delete
 
 # Full help
 cargo run -- --help
@@ -67,5 +70,5 @@ src/
 ├── config/             # Configuration & ecosystem loading
 ├── scanner/            # Directory scanning & size calculation
 ├── size_util.rs        # Size formatting utility
-└── ui/                 # TUI components (planned)
+└── deleter.rs          # Deletion logic
 ```
