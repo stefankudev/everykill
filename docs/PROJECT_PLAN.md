@@ -212,44 +212,76 @@ pub struct DeleteSummary {
 - Symbolic link → only delete symlink, not target
 - Show errors in summary after deletion
 
-## CLI Arguments (clap)
+## CLI Arguments (clap) - IMPLEMENTED
+
+**File:** `src/args.rs`
 
 ```rust
 use clap::Parser;
 
 #[derive(Parser)]
 struct Args {
-    /// Scan directory (default: current directory)
-    #[arg(short, long)]
-    path: Option<PathBuf>,
+    /// Directory to scan
+    #[arg(short = 'd', long = "directory", default_value = ".")]
+    path: PathBuf,
 
-    /// Filter by ecosystem (can specify multiple)
-    #[arg(short, long)]
-    lang: Vec<String>,
+    /// Ecosystems to scan (comma-separated)
+    #[arg(short = 't', long = "target")]
+    target: Option<String>,
 
-    /// Scan local dependency directories (default: scans current directory and subfolders)
-    #[arg(short, long, default_value = "true")]
-    local: bool,
+    /// Include all ecosystems
+    #[arg(long = "all")]
+    all: bool,
 
-    /// Also scan global/user-level dependency caches
-    #[arg(short, long)]
+    /// Include global/user-level caches
+    #[arg(short = 'g', long = "global")]
     global: bool,
 
-    /// Preview only (don't delete)
-    #[arg(short, long, default_value = "true")]
-    dry_run: bool,
+    /// Exclude directories by name (comma-separated)
+    #[arg(short = 'E', long = "exclude")]
+    exclude: Option<String>,
 
-    /// Actually delete (default: dry-run mode)
-    #[arg(short, long)]
-    delete: bool,
+    /// Exclude hidden directories
+    #[arg(short = 'x', long = "exclude-hidden")]
+    exclude_hidden: bool,
 
-    /// Show folder sizes
-    #[arg(short, long)]
-    size: bool,
+    /// Don't scan subdirectories
+    #[arg(long = "no-recursive")]
+    no_recursive: bool,
+
+    /// Maximum directory depth
+    #[arg(long = "depth")]
+    depth: Option<usize>,
+
+    /// Scan from home directory
+    #[arg(short = 'f', long = "full")]
+    full: bool,
+
+    /// Sort results by size or path
+    #[arg(short = 's', long = "sort")]
+    sort: Option<SortBy>,
+
+    /// Show error messages
+    #[arg(short = 'e', long = "show-errors")]
+    show_errors: bool,
 }
 ```
 
-**Default behavior:** When run without flags, `everykill` scans the current directory and all subfolders for local dependency folders. Use `--global` or `-g` to also include user-level caches (`~/.npm/`, `~/.cargo/registry/`, etc.).
+**CLI Flags Table:**
+
+| Arg | Description | Default |
+|-----|-------------|---------|
+| `-d, --directory <PATH>` | Directory to scan | `.` |
+| `-t, --target <LANGS>` | Ecosystems to scan | All local |
+| `--all` | Include all ecosystems | `false` |
+| `-g, --global` | Include global caches | `false` |
+| `-E, --exclude <DIRS>` | Exclude directories | None |
+| `-x, --exclude-hidden` | Exclude hidden dirs | `false` |
+| `--no-recursive` | Current dir only | `false` |
+| `--depth <N>` | Max depth | Unlimited |
+| `-f, --full` | Scan from home | `false` |
+| `-s, --sort <BY>` | Sort by size/path | None |
+| `-e, --show-errors` | Show errors | `false` |
 
 ## Error Handling Strategy
 
@@ -269,33 +301,38 @@ All errors should be:
 
 ## File Organization Summary
 
-| File                      | Responsibility                   |
-| ------------------------- | -------------------------------- |
-| `src/config/ecosystem.rs` | Load & parse `ecosystems/*.json` |
-| `src/scanner/mod.rs`      | Module exports                   |
-| `src/scanner/dir.rs`      | Walk directories, find matches   |
-| `src/scanner/size.rs`     | Calculate folder sizes           |
-| `src/ui/app.rs`           | Main TUI event loop              |
-| `src/ui/widgets.rs`       | List widget, status bar          |
-| `src/deleter.rs`          | Delete folders, confirmation     |
+| File | Responsibility | Status |
+|------|---------------|--------|
+| `src/args.rs` | CLI argument parsing | ✅ Done |
+| `src/config/ecosystem.rs` | Load & parse `ecosystems/*.json` | ✅ Done |
+| `src/scanner/mod.rs` | Module exports | ✅ Done |
+| `src/scanner/dir.rs` | Walk directories, find matches | ✅ Done |
+| `src/scanner/size.rs` | Calculate folder sizes | ✅ Done |
+| `src/size_util.rs` | Size formatting utility | ✅ Done |
+| `src/ui/app.rs` | Main TUI event loop | Planned |
+| `src/ui/widgets.rs` | List widget, status bar | Planned |
+| `src/deleter.rs` | Delete folders, confirmation | Planned |
 
 ## Testing Strategy
 
-| Component         | Test Approach                                 | Status |
-| ----------------- | --------------------------------------------- | ------ |
-| Ecosystem loading | Load all JSONs, verify parse                  | Done   |
-| Pattern matching  | Unit tests with known folder names            | Done   |
-| Size calculation  | Use temp dirs with known sizes                | Done   |
-| Deletion          | Create temp dirs, delete, verify removal      | Planned |
-| UI                | Manual testing only (ratatui is hard to test) | Planned |
+| Component | Test Approach | Status |
+| --------- | ------------ | ------ |
+| Ecosystem loading | Load all JSONs, verify parse | ✅ Done |
+| Pattern matching | Unit tests with known folder names | ✅ Done |
+| Size calculation | Use temp dirs with known sizes | ✅ Done |
+| CLI arguments | Unit tests for arg parsing | ✅ Done |
+| Size formatting | Unit tests for all units/precisions | ✅ Done |
+| Deletion | Create temp dirs, delete, verify removal | Planned |
+| UI | Manual testing only (ratatui is hard to test) | Planned |
 
 ## Decisions
 
-| Decision               | Details                                     |
-| ---------------------- | ------------------------------------------- |
-| Default scanning       | Scans current directory and all subfolders  |
-| `--global` / `-g` flag | Enables scanning of user-level caches       |
-| Parallel scanning      | Implemented immediately with rayon          |
-| Delete confirmation    | **Per-item** (npkill-style)                 |
-| Sort order             | **Largest first** by default                |
-| Duplicate detection    | Skip if same inode found (handles symlinks) |
+| Decision | Details | Status |
+| -------- | -------- | ------ |
+| Default scanning | Scans current directory and all subfolders | ✅ Done |
+| `--global` / `-g` flag | Enables scanning of user-level caches | ✅ Done |
+| Parallel scanning | Implemented with rayon | ✅ Done |
+| Delete confirmation | **Per-item** (npkill-style) | Planned |
+| Sort order | User-controlled via `-s` flag | ✅ Done |
+| Duplicate detection | Skip if same inode found (handles symlinks) | ✅ Done |
+| Size formatting | Dynamic precision based on magnitude | ✅ Done |
