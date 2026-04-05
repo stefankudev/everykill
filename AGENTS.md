@@ -100,6 +100,11 @@ everykill/
 - `Size` struct with `value` and `unit`
 - Dynamic precision: 0 decimals (≥100), 1 decimal (≥10), 2 decimals (<10)
 
+#### `src/deleter.rs`
+- `delete_folders()` - deletes selected folders
+- `DeleteSummary` struct with `deleted_count`, `freed_bytes`, `errors`
+- `print_delete_summary()` - prints deletion summary
+
 #### `src/ui/ascii.rs`
 - `get_ascii_art(terminal_width)` - selects appropriate art based on terminal size
 - `print_centered_art(terminal_width)` - renders centered ASCII banner
@@ -122,23 +127,26 @@ everykill/
 
 ### CLI Flags
 
-| Flag | Description | Default |
-| ---- |-------------|---------|
-| `-d, --directory <PATH>` | Directory to scan | `.` |
-| `-t, --target <LANGS>` | Ecosystems to scan (comma-separated) | All local |
-| `--all` | Include all ecosystems | `false` |
-| `-g, --global` | Include global/user-level caches | `false` |
-| `-E, --exclude <DIRS>` | Exclude directories by name (comma-separated) | None |
-| `-x, --exclude-hidden` | Exclude hidden directories | `false` |
-| `--no-recursive` | Don't scan subdirectories (alias for `--depth 0`) | `false` |
-| `--depth <N>` | Maximum directory depth | Unlimited |
-| `-f, --full` | Scan from home directory | `false` |
-| `-s, --sort <BY>` | Sort by `size` or `path` | None |
-| `-e, --show-errors` | Show error messages | `false` |
-| `-h, --help` | Show help | - |
-| `-v, --version` | Show version | - |
+| Flag                     | Description                                       | Default   |
+| ------------------------ | ------------------------------------------------- | --------- |
+| `-d, --directory <PATH>` | Directory to scan                                 | `.`       |
+| `-t, --target <LANGS>`   | Ecosystems to scan (comma-separated)              | All local |
+| `--all`                  | Include all ecosystems                            | `false`   |
+| `-g, --global`           | Include global/user-level caches                  | `false`   |
+| `-E, --exclude <DIRS>`   | Exclude directories by name (comma-separated)     | None      |
+| `-x, --exclude-hidden`   | Exclude hidden directories                        | `false`   |
+| `--no-recursive`         | Don't scan subdirectories (alias for `--depth 0`) | `false`   |
+| `--depth <N>`            | Maximum directory depth (0 = current only)        | Unlimited |
+| `-f, --full`             | Scan from home directory                          | `false`   |
+| `-s, --sort <BY>`        | Sort by `size` or `path`                          | None      |
+| `-e, --show-errors`      | Show error messages                               | `false`   |
+| `-D, --delete`           | Delete found folders                              | `false`   |
+| `-h, --help`             | Show help                                         | -         |
+| `-v, --version`          | Show version                                      | -         |
 
 ### Planned UI Flow
+
+**Note:** CLI deletion is now implemented. The TUI will provide interactive selection before deletion.
 
 1. Display ASCII art banner (centered based on terminal width)
 2. Scan directory tree for matching dependency folders
@@ -149,16 +157,17 @@ everykill/
 
 ## Design Decisions
 
-| Decision                       | Rationale                                        | Status |
-| ------------------------------ | ------------------------------------------------ | ------ |
-| Per-ecosystem JSON files       | Easy contribution without code changes           | Done   |
-| Rust                           | Single binary, no runtime needed, fast           | Done   |
-| Ratatui for TUI                | Full keyboard/mouse support, npkill-style        | Planned |
-| Parallel scanning with rayon   | Fast directory traversal                         | Done   |
-| Skip hidden dirs (.git, etc.)  | Avoid scanning version control                    | Done   |
-| Size calculation after scan    | Separate phases for clarity                       | Done   |
-| Pre-compiled ASCII art         | No runtime generation needed                     | Done   |
-| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion                       | Done   |
+| Decision                       | Rationale                                 | Status  |
+| ------------------------------ | ----------------------------------------- | ------- |
+| Per-ecosystem JSON files       | Easy contribution without code changes    | Done    |
+| Rust                           | Single binary, no runtime needed, fast    | Done    |
+| Ratatui for TUI                | Full keyboard/mouse support, npkill-style | Planned |
+| Parallel scanning with rayon   | Fast directory traversal                  | Done    |
+| Skip hidden dirs (.git, etc.)  | Avoid scanning version control            | Done    |
+| Size calculation after scan    | Separate phases for clarity               | Done    |
+| CLI deletion before TUI        | Standalone usable without TUI             | Done    |
+| Pre-compiled ASCII art         | No runtime generation needed              | Done    |
+| `ecosystems/` not `languages/` | Avoids i18n/l10n confusion                | Done    |
 
 ## CI/CD & Distribution
 
@@ -233,16 +242,16 @@ git commit -m "style(ui): center ASCII art banner"
 
 ## Roadmap
 
+- [x] Create actual ASCII art for each width
 - [x] Implement directory scanner module
 - [x] Implement ecosystem JSON loader
 - [x] Add folder size calculation
 - [x] Add CLI args via clap
 - [x] Add size formatting utility
 - [x] Add clippy linting configuration
+- [x] Add deletion logic (CLI mode)
 - [ ] Implement TUI with ratatui
 - [ ] Add keyboard navigation (arrows, space, enter)
-- [ ] Add deletion logic with confirmation
-- [ ] Create actual ASCII art for each width
 - [ ] Cross-platform testing (Windows)
 - [ ] Set up cargo-dist pipeline
 - [ ] First release
