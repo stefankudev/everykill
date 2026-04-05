@@ -82,7 +82,7 @@ mod tests {
         ];
 
         use crate::scanner::scan_directory;
-        let mut folders = scan_directory(dir, &ecosystems);
+        let mut folders = scan_directory(dir, &ecosystems, true, &[], false, None);
 
         assert_eq!(folders.len(), 2);
 

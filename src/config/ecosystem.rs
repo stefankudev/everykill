@@ -12,13 +12,27 @@ pub struct Ecosystem {
 
 impl Ecosystem {
     pub fn matches_folder(&self, folder_name: &str) -> bool {
-        self.local
+        self.matches_folder_with_globals(folder_name, true)
+    }
+
+    pub fn matches_folder_with_globals(&self, folder_name: &str, include_globals: bool) -> bool {
+        let local_match = self
+            .local
             .iter()
-            .any(|p| match_folder_pattern(p, folder_name))
-            || self
+            .any(|p| match_folder_pattern(p, folder_name));
+
+        if local_match {
+            return true;
+        }
+
+        if include_globals {
+            return self
                 .global
                 .iter()
-                .any(|p| match_folder_pattern(p, folder_name))
+                .any(|p| match_folder_pattern(p, folder_name));
+        }
+
+        false
     }
 }
 

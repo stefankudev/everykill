@@ -4,14 +4,26 @@ use std::path::Path;
 
 const SKIP_DIRS: &[&str] = &[".git", ".svn", ".hg", "node_modules/.cache", ".cache"];
 
-pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFolder> {
+pub fn scan_directory(
+    root: &Path,
+    ecosystems: &[Ecosystem],
+    include_globals: bool,
+    exclude_dirs: &[String],
+    exclude_hidden: bool,
+    max_depth: Option<usize>,
+) -> Vec<DiscoveredFolder> {
     let mut folders = Vec::new();
     let mut seen_inodes: HashSet<u64> = HashSet::new();
 
-    for entry in walkdir::WalkDir::new(root)
-        .follow_links(false)
+    let mut walker = walkdir::WalkDir::new(root).follow_links(false);
+
+    if let Some(depth) = max_depth {
+        walker = walker.max_depth(depth);
+    }
+
+    for entry in walker
         .into_iter()
-        .filter_entry(|e| !should_skip(e.file_name()))
+        .filter_entry(|e| !should_skip_entry(e, exclude_dirs, exclude_hidden))
     {
         match entry {
             Ok(entry) => {
@@ -19,7 +31,7 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
                     let file_name = entry.file_name().to_string_lossy();
 
                     for ecosystem in ecosystems {
-                        if ecosystem.matches_folder(&file_name) {
+                        if ecosystem.matches_folder_with_globals(&file_name, include_globals) {
                             if let Ok(inode) = get_inode(entry.path()) {
                                 if seen_inodes.contains(&inode) {
                                     continue;
@@ -46,6 +58,25 @@ pub fn scan_directory(root: &Path, ecosystems: &[Ecosystem]) -> Vec<DiscoveredFo
         .into_iter()
         .filter(|f| !path_contains_skip_dir(&f.path))
         .collect()
+}
+
+fn should_skip_entry(
+    entry: &walkdir::DirEntry,
+    exclude_dirs: &[String],
+    exclude_hidden: bool,
+) -> bool {
+    let name = entry.file_name();
+    let name_str = name.to_string_lossy();
+
+    if exclude_hidden && name_str.starts_with('.') {
+        return true;
+    }
+
+    if exclude_dirs.iter().any(|d| name_str == *d) {
+        return true;
+    }
+
+    SKIP_DIRS.contains(&name_str.as_ref())
 }
 
 fn path_contains_skip_dir(path: &Path) -> bool {
@@ -89,7 +120,7 @@ mod tests {
             global: vec![],
         }];
 
-        let folders = scan_directory(project_dir, &ecosystems);
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
 
         assert!(!folders.is_empty());
         assert!(folders.iter().any(|f| f.path.ends_with("node_modules")));
@@ -110,7 +141,7 @@ mod tests {
             global: vec![],
         }];
 
-        let folders = scan_directory(project_dir, &ecosystems);
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], true, None);
 
         assert!(folders
             .iter()
@@ -130,7 +161,7 @@ mod tests {
             global: vec![],
         }];
 
-        let folders = scan_directory(project_dir, &ecosystems);
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
 
         assert_eq!(folders.len(), 1);
         assert!(folders[0].path.ends_with("node_modules"));
