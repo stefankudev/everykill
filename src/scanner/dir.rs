@@ -118,6 +118,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
@@ -139,6 +140,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], true, None);
@@ -159,6 +161,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);

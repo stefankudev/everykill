@@ -73,11 +73,13 @@ mod tests {
                 name: "Node.js".to_string(),
                 local: vec!["node_modules/".to_string()],
                 global: vec![],
+                markers: vec![],
             },
             Ecosystem {
                 name: "Rust".to_string(),
                 local: vec!["target/".to_string()],
                 global: vec![],
+                markers: vec![],
             },
         ];
 

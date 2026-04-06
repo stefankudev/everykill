@@ -8,6 +8,10 @@ pub struct Ecosystem {
     pub name: String,
     pub local: Vec<String>,
     pub global: Vec<String>,
+    /// Files/dirs in the project root that confirm this ecosystem (e.g. "Cargo.toml").
+    /// Empty means the ecosystem has no ambiguous patterns and needs no confirmation.
+    #[serde(default)]
+    pub markers: Vec<String>,
 }
 
 impl Ecosystem {
@@ -104,6 +108,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec!["~/.npm/".to_string()],
+            markers: vec![],
         };
         assert!(eco.matches_folder("node_modules"));
         assert!(!eco.matches_folder("node_modules123"));
@@ -115,6 +120,7 @@ mod tests {
             name: "Rust".to_string(),
             local: vec!["target/".to_string(), "Cargo.lock".to_string()],
             global: vec![],
+            markers: vec![],
         };
         assert!(eco.matches_folder("target"));
         assert!(eco.matches_folder("Cargo.lock"));
