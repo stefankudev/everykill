@@ -248,7 +248,7 @@ fn render(
     frame: &mut ratatui::Frame,
     state: &mut AppState,
     term_width: u16,
-    viewport_height: usize,
+    _viewport_height: usize,
 ) {
     let area = frame.area();
     let (header_area, list_area, footer_area) = build_layout(area, term_width);
@@ -261,11 +261,9 @@ fn render(
         header_area,
     );
 
-    // List
+    // List — we own scroll_offset; pass it to ratatui, never read it back
     let mut table_state = build_table_state(state);
     frame.render_stateful_widget(FolderListWidget { state }, list_area, &mut table_state);
-    // Sync scroll offset back (ratatui may have adjusted it)
-    state.scroll_offset = table_state.offset();
 
     // Footer
     frame.render_widget(FooterWidget { state }, footer_area);
@@ -274,9 +272,6 @@ fn render(
     if state.mode == AppMode::FilterPopup {
         frame.render_widget(FilterPopupWidget { state }, area);
     }
-
-    // Keep viewport scroll in sync
-    state.clamp_scroll(viewport_height);
 }
 
 // ---------------------------------------------------------------------------
@@ -300,12 +295,12 @@ fn handle_key(state: &mut AppState, key: KeyCode, viewport_height: usize) -> boo
 fn handle_key_normal(state: &mut AppState, key: KeyCode, viewport_height: usize) -> bool {
     match key {
         // Navigation
-        KeyCode::Up | KeyCode::Char('k') => state.cursor_up(),
+        KeyCode::Up | KeyCode::Char('k') => state.cursor_up(viewport_height),
         KeyCode::Down | KeyCode::Char('j') => state.cursor_down(viewport_height),
         KeyCode::PageUp => state.page_up(viewport_height),
         KeyCode::PageDown => state.page_down(viewport_height),
         KeyCode::Home => state.jump_to_top(),
-        KeyCode::End => state.jump_to_bottom(),
+        KeyCode::End => state.jump_to_bottom(viewport_height),
 
         // Selection
         KeyCode::Char(' ') => state.toggle_selection(),
@@ -424,7 +419,7 @@ fn handle_mouse(
 ) {
     match mouse.kind {
         MouseEventKind::ScrollUp => {
-            state.cursor_up();
+            state.cursor_up(viewport_height);
         }
         MouseEventKind::ScrollDown => {
             state.cursor_down(viewport_height);

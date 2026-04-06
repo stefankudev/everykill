@@ -146,11 +146,11 @@ impl AppState {
     // Navigation
     // -----------------------------------------------------------------------
 
-    pub fn cursor_up(&mut self) {
+    pub fn cursor_up(&mut self, viewport_height: usize) {
         if self.cursor > 0 {
             self.cursor -= 1;
         }
-        self.clamp_scroll(1); // viewport_height placeholder; tui.rs passes real value
+        self.clamp_scroll(viewport_height);
     }
 
     pub fn cursor_down(&mut self, viewport_height: usize) {
@@ -179,12 +179,12 @@ impl AppState {
         self.scroll_offset = 0;
     }
 
-    pub fn jump_to_bottom(&mut self) {
+    pub fn jump_to_bottom(&mut self, viewport_height: usize) {
         let len = self.visible_len();
         if len > 0 {
             self.cursor = len - 1;
         }
-        self.clamp_scroll(1);
+        self.clamp_scroll(viewport_height);
     }
 
     /// Adjust scroll_offset so cursor stays within the viewport.
@@ -409,7 +409,7 @@ mod tests {
     fn test_cursor_bounds_up() {
         let mut s = state_with_folders();
         s.cursor = 0;
-        s.cursor_up();
+        s.cursor_up(10);
         assert_eq!(s.cursor, 0);
     }
 
