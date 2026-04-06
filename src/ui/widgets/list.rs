@@ -72,6 +72,13 @@ impl StatefulWidget for FolderListWidget<'_> {
                 let eco_cell = folder.ecosystem.clone();
                 let size_cell = format_size_cell(folder, scan_complete);
 
+                // Style ecosystem cell: dim if uncertain (ambiguous/undetected)
+                let eco_style = if folder.confidence.is_uncertain() {
+                    Style::default().fg(Color::DarkGray)
+                } else {
+                    Style::default()
+                };
+
                 let checkbox_style = if is_selected {
                     Style::default()
                         .fg(Color::Green)
@@ -97,7 +104,7 @@ impl StatefulWidget for FolderListWidget<'_> {
                 Row::new(vec![
                     ratatui::text::Text::from(Line::from(Span::styled(checkbox, checkbox_style))),
                     ratatui::text::Text::from(Line::from(Span::raw(path_cell))),
-                    ratatui::text::Text::from(Line::from(Span::raw(eco_cell))),
+                    ratatui::text::Text::from(Line::from(Span::styled(eco_cell, eco_style))),
                     ratatui::text::Text::from(Line::from(Span::styled(size_cell, size_style))),
                 ])
                 .style(row_style)
