@@ -66,8 +66,14 @@ pub fn run_plain(args: Args) {
         print_delete_summary(&summary);
     } else {
         for folder in &folders {
+            let uncertain_marker = if folder.confidence.is_uncertain() {
+                "[?] "
+            } else {
+                ""
+            };
             println!(
-                "  {} ({}) - {}",
+                "  {}{} ({}) - {}",
+                uncertain_marker,
                 folder.path.display(),
                 folder.ecosystem,
                 format_size(folder.size_bytes)
