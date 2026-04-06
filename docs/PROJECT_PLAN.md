@@ -11,7 +11,7 @@ Find and delete dependency folders across all ecosystems (Node.js, Rust, Python,
 3. ✅ **Size calculation** - Parallel folder sizing
 4. ✅ **CLI arguments** - Filtering, sorting, path options
 5. ✅ **Deletion** - Delete folders with confirmation
-6. ⬜ **TUI** - Interactive terminal UI with ratatui
+6. ✅ **TUI** - Interactive terminal UI with ratatui
 
 ## Component Architecture
 
@@ -42,6 +42,12 @@ src/
 | Human-readable sizes (B → EB) | ✅ |
 | CLI deletion (`-D, --delete`) | ✅ |
 | Clippy linting | ✅ |
+| Interactive TUI (ratatui) | ✅ |
+| Background scan thread (mpsc) | ✅ |
+| Ecosystem filter popup | ✅ |
+| Deletion confirmation prompt | ✅ |
+| Mouse support (click + scroll) | ✅ |
+| `--no-tui` plain-text fallback | ✅ |
 
 ## CLI Flags
 
