@@ -3,6 +3,22 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+/// How certain we are that a discovered folder belongs to an ecosystem.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Confidence {
+    #[default]
+    Certain,
+    Confirmed,
+    Ambiguous,
+    Undetected,
+}
+
+impl Confidence {
+    pub fn is_uncertain(self) -> bool {
+        matches!(self, Confidence::Ambiguous | Confidence::Undetected)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ecosystem {
     pub name: String,
@@ -51,6 +67,7 @@ pub struct DiscoveredFolder {
     pub ecosystem: String,
     pub size_bytes: u64,
     pub selected: bool,
+    pub confidence: Confidence,
 }
 
 impl DiscoveredFolder {
@@ -60,6 +77,17 @@ impl DiscoveredFolder {
             ecosystem,
             size_bytes: 0,
             selected: false,
+            confidence: Confidence::Certain,
+        }
+    }
+
+    pub fn with_resolution(path: PathBuf, ecosystem: String, confidence: Confidence) -> Self {
+        Self {
+            path,
+            ecosystem,
+            size_bytes: 0,
+            selected: false,
+            confidence,
         }
     }
 }
