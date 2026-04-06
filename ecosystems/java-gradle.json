@@ -1,5 +1,6 @@
 {
   "name": "Java (Gradle)",
   "local": [".gradle/", "build/"],
-  "global": ["~/.gradle/caches/"]
+  "global": ["~/.gradle/caches/"],
+  "markers": ["build.gradle", "settings.gradle"]
 }

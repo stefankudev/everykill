@@ -1,5 +1,6 @@
 {
   "name": "Next.js",
   "local": [".next/", "node_modules/"],
-  "global": []
+  "global": [],
+  "markers": ["next.config.js", "next.config.ts"]
 }

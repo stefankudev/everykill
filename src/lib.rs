@@ -13,6 +13,14 @@ use size_util::format_size;
 pub fn run() {
     let args = Args::parse();
 
+    if args.no_tui {
+        run_plain(args);
+    } else {
+        ui::tui::run_tui(args).expect("TUI failed");
+    }
+}
+
+pub fn run_plain(args: Args) {
     let ecosystems = config::load_ecosystems().expect("failed to load ecosystems");
     let target_ecosystems = args.get_ecosystems(&ecosystems);
     let include_globals = args.should_include_globals();
@@ -58,8 +66,14 @@ pub fn run() {
         print_delete_summary(&summary);
     } else {
         for folder in &folders {
+            let uncertain_marker = if folder.confidence.is_uncertain() {
+                "[?] "
+            } else {
+                ""
+            };
             println!(
-                "  {} ({}) - {}",
+                "  {}{} ({}) - {}",
+                uncertain_marker,
                 folder.path.display(),
                 folder.ecosystem,
                 format_size(folder.size_bytes)

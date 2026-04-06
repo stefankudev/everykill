@@ -1,5 +1,6 @@
 {
   "name": "Android",
   "local": [".gradle/", "build/", "app/build/"],
-  "global": ["~/.android/"]
+  "global": ["~/.android/"],
+  "markers": ["AndroidManifest.xml"]
 }

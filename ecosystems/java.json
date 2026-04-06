@@ -1,5 +1,6 @@
 {
   "name": "Java",
   "local": ["target/"],
-  "global": ["~/.m2/repository/"]
+  "global": ["~/.m2/repository/"],
+  "markers": ["pom.xml"]
 }

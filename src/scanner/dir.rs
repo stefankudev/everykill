@@ -1,8 +1,74 @@
-use crate::config::{DiscoveredFolder, Ecosystem};
+use crate::config::{Confidence, DiscoveredFolder, Ecosystem};
 use std::collections::HashSet;
 use std::path::Path;
 
 const SKIP_DIRS: &[&str] = &[".git", ".svn", ".hg", "node_modules/.cache", ".cache"];
+
+// ---------------------------------------------------------------------------
+// Confidence scoring
+// ---------------------------------------------------------------------------
+
+/// Result of resolving a discovered folder to an ecosystem.
+#[derive(Debug, Clone)]
+pub struct ResolvedEcosystem {
+    /// Display label, e.g. "Rust" or "Rust / Clojure".
+    pub label: String,
+    pub confidence: Confidence,
+}
+
+/// Look at all `candidates` that matched this folder and return the best
+/// interpretation based on marker files present in `project_root`.
+fn resolve_ecosystem(candidates: &[&Ecosystem], project_root: &Path) -> ResolvedEcosystem {
+    debug_assert!(!candidates.is_empty());
+
+    if candidates.len() == 1 {
+        return ResolvedEcosystem {
+            label: candidates[0].name.clone(),
+            confidence: Confidence::Certain,
+        };
+    }
+
+    let mut confirmed: Vec<&Ecosystem> = Vec::new();
+
+    for eco in candidates {
+        if eco.markers.is_empty() {
+            continue;
+        }
+        let all_present = eco.markers.iter().all(|m| project_root.join(m).is_file());
+        if all_present {
+            confirmed.push(eco);
+        }
+    }
+
+    if confirmed.len() == 1 {
+        ResolvedEcosystem {
+            label: confirmed[0].name.clone(),
+            confidence: Confidence::Confirmed,
+        }
+    } else if confirmed.is_empty() {
+        ResolvedEcosystem {
+            label: candidates
+                .iter()
+                .map(|e| e.name.as_str())
+                .collect::<Vec<_>>()
+                .join(" / "),
+            confidence: Confidence::Undetected,
+        }
+    } else {
+        ResolvedEcosystem {
+            label: confirmed
+                .iter()
+                .map(|e| e.name.as_str())
+                .collect::<Vec<_>>()
+                .join(" / "),
+            confidence: Confidence::Ambiguous,
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Directory scanning
+// ---------------------------------------------------------------------------
 
 pub fn scan_directory(
     root: &Path,
@@ -30,22 +96,30 @@ pub fn scan_directory(
                 if entry.file_type().is_dir() {
                     let file_name = entry.file_name().to_string_lossy();
 
-                    for ecosystem in ecosystems {
-                        if ecosystem.matches_folder_with_globals(&file_name, include_globals) {
-                            if let Ok(inode) = get_inode(entry.path()) {
-                                if seen_inodes.contains(&inode) {
-                                    continue;
-                                }
-                                seen_inodes.insert(inode);
-                            }
+                    let candidates: Vec<&Ecosystem> = ecosystems
+                        .iter()
+                        .filter(|e| e.matches_folder_with_globals(&file_name, include_globals))
+                        .collect();
 
-                            folders.push(DiscoveredFolder::new(
-                                entry.path().to_path_buf(),
-                                ecosystem.name.clone(),
-                            ));
-                            break;
-                        }
+                    if candidates.is_empty() {
+                        continue;
                     }
+
+                    if let Ok(inode) = get_inode(entry.path()) {
+                        if seen_inodes.contains(&inode) {
+                            continue;
+                        }
+                        seen_inodes.insert(inode);
+                    }
+
+                    let project_root = entry.path().parent().unwrap_or(entry.path());
+                    let resolved = resolve_ecosystem(&candidates, project_root);
+
+                    folders.push(DiscoveredFolder::with_resolution(
+                        entry.path().to_path_buf(),
+                        resolved.label,
+                        resolved.confidence,
+                    ));
                 }
             }
             Err(e) => {
@@ -100,6 +174,10 @@ fn get_inode(path: &Path) -> std::io::Result<u64> {
     Ok(metadata.ino())
 }
 
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -118,6 +196,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
@@ -139,6 +218,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], true, None);
@@ -159,6 +239,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec![],
+            markers: vec![],
         }];
 
         let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);

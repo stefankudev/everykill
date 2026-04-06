@@ -1,5 +1,6 @@
 {
   "name": "Scala",
   "local": ["target/", ".ivy2/"],
-  "global": ["~/.ivy2/cache/", "~/.sbt/boot/"]
+  "global": ["~/.ivy2/cache/", "~/.sbt/boot/"],
+  "markers": ["build.sbt", "build.sc"]
 }

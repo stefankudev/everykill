@@ -57,6 +57,10 @@ pub struct Args {
     /// Delete selected folders
     #[arg(short = 'D', long = "delete")]
     pub delete: bool,
+
+    /// Disable the interactive TUI; print results as plain text
+    #[arg(long = "no-tui", default_value_t = false)]
+    pub no_tui: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]

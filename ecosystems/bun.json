@@ -1,5 +1,6 @@
 {
   "name": "Bun",
   "local": ["node_modules/", ".bun-install/"],
-  "global": ["~/.bun/install-cache/"]
+  "global": ["~/.bun/install-cache/"],
+  "markers": ["bun.lockb"]
 }

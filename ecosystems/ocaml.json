@@ -1,5 +1,6 @@
 {
   "name": "OCaml",
   "local": ["_opam/", "_build/"],
-  "global": ["~/.opam/"]
+  "global": ["~/.opam/"],
+  "markers": ["dune-project", ".ocamlformat"]
 }

@@ -116,6 +116,7 @@ mod tests {
             ecosystem: "Node.js".to_string(),
             size_bytes: 100,
             selected: true,
+            confidence: crate::config::Confidence::Certain,
         }];
 
         let summary = delete_folders(&folders, true);
@@ -140,6 +141,7 @@ mod tests {
             ecosystem: "Rust".to_string(),
             size_bytes: 100,
             selected: true,
+            confidence: crate::config::Confidence::Certain,
         }];
 
         let summary = delete_folders(&folders, false);
@@ -163,6 +165,7 @@ mod tests {
             ecosystem: "Node.js".to_string(),
             size_bytes: 100,
             selected: false,
+            confidence: crate::config::Confidence::Certain,
         }];
 
         let summary = delete_folders(&folders, false);

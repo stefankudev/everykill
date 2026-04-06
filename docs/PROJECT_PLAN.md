@@ -11,22 +11,31 @@ Find and delete dependency folders across all ecosystems (Node.js, Rust, Python,
 3. ✅ **Size calculation** - Parallel folder sizing
 4. ✅ **CLI arguments** - Filtering, sorting, path options
 5. ✅ **Deletion** - Delete folders with confirmation
-6. ⬜ **TUI** - Interactive terminal UI with ratatui
+6. ✅ **TUI** - Interactive terminal UI with ratatui
 
 ## Component Architecture
 
 ```
 src/
 ├── main.rs              # Entry point
-├── lib.rs               # run() function
-├── args.rs             # CLI argument parsing
+├── lib.rs               # run() → TUI or plain-text
+├── args.rs              # CLI argument parsing
 ├── config/
-│   └── ecosystem.rs    # Ecosystem loading & matching
+│   └── ecosystem.rs     # Ecosystem loading & matching
 ├── scanner/
-│   ├── dir.rs          # Directory traversal
-│   └── size.rs         # Parallel size calculation
-├── size_util.rs        # Human-readable size formatting
-└── deleter.rs          # Deletion logic
+│   ├── dir.rs           # Directory traversal
+│   └── size.rs          # Parallel size calculation
+├── size_util.rs         # Human-readable size formatting
+├── deleter.rs           # Deletion logic
+└── ui/
+    ├── ascii.rs         # ASCII art selection & rendering
+    ├── app.rs           # AppState, ScanEvent, state machine
+    ├── tui.rs           # Terminal init/restore, event loop, scan thread
+    └── widgets/
+        ├── header.rs    # ASCII art banner widget
+        ├── list.rs      # Scrollable folder table widget
+        ├── footer.rs    # Status bar widget
+        └── filter.rs    # Ecosystem filter popup widget
 ```
 
 ## Implemented Features
@@ -42,6 +51,12 @@ src/
 | Human-readable sizes (B → EB) | ✅ |
 | CLI deletion (`-D, --delete`) | ✅ |
 | Clippy linting | ✅ |
+| Interactive TUI (ratatui) | ✅ |
+| Background scan thread (mpsc) | ✅ |
+| Ecosystem filter popup | ✅ |
+| Deletion confirmation prompt | ✅ |
+| Mouse support (click + scroll) | ✅ |
+| `--no-tui` plain-text fallback | ✅ |
 
 ## CLI Flags
 
@@ -59,78 +74,22 @@ src/
 | `-s, --sort <BY>` | Sort by size/path | None |
 | `-e, --show-errors` | Show errors | `false` |
 | `-D, --delete` | Delete found folders | `false` |
+| `--no-tui` | Disable interactive TUI | `false` |
 
-## Deletion (IMPLEMENTED)
-
-**File:** `src/deleter.rs`
-
-```rust
-pub fn delete_folders(folders: &[DiscoveredFolder], dry_run: bool) -> DeleteSummary {
-    // Iterates folders, deletes selected ones
-    // Returns summary with count, freed bytes, errors
-}
-
-pub struct DeleteSummary {
-    pub deleted_count: usize,
-    pub freed_bytes: u64,
-    pub errors: Vec<DeleteError>,
-}
-```
-
-## Next: TUI
-
-After CLI deletion is working, build the TUI for interactive selection:
-
-## TUI with AppState
-
-After standalone deletion is working, we build the TUI on top of AppState:
-
-### AppState
-
-```rust
-pub struct AppState {
-    pub folders: Vec<DiscoveredFolder>,  // All found folders
-    pub selected_index: usize,            // Current cursor position
-    pub filter_ecosystem: Option<String>, // --lang filter
-    pub total_size: u64,                 // Sum of selected sizes
-    pub is_scanning: bool,                // Scanning in progress
-    pub scan_path: PathBuf,               // Root directory being scanned
-}
-```
-
-### UI Layout
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                                                          │
-│         ____ _  _ ____ ____ _   _ _  _ _ _    _           │
-│         |___ |  | |___ |__/  \_/  |_/  | | |    |           │
-│         |___  \/  |___ |  \   |   | \_ | |___ |___        │
-│                                                          │
-├──────────────────────────────────────────────────────────┤
-│  [x] node_modules        ~/projects/app/node_modules     │
-│  [ ] target/             ~/projects/cli/target           │
-│  > vendor/               ~/projects/api/vendor           │
-│  [ ] build/              ~/projects/java/build           │
-│                                                          │
-├──────────────────────────────────────────────────────────┤
-│  Selected: 1  |  Total: 1.2 GB                          │
-│  [SPACE] select  [ENTER] delete  [Q] quit              │
-└──────────────────────────────────────────────────────────┘
-```
-
-### Key Events
+## TUI Key Bindings
 
 | Key | Action |
 |-----|--------|
-| `↑` / `↓` | Move cursor |
+| `↑` / `↓` / `j` / `k` | Navigate list |
+| `Page Up` / `Page Down` | Scroll by page |
+| `Home` / `End` | Jump to top / bottom |
 | `Space` | Toggle selection |
-| `a` | Select all |
+| `a` | Select all visible |
 | `n` | Deselect all |
-| `Enter` | Delete selected |
-| `d` | Toggle dry-run mode |
-| `f` | Filter by ecosystem |
-| `Q` / `Esc` | Quit |
+| `d` | Toggle dry-run |
+| `f` | Open ecosystem filter popup |
+| `Enter` | Delete selected (with confirmation) |
+| `q` / `Q` / `Esc` | Quit |
 
 ## Testing
 
@@ -142,3 +101,4 @@ pub struct AppState {
 | CLI arguments | ✅ |
 | Size formatting | ✅ |
 | Deletion | ✅ |
+| AppState / ScanEvent | ✅ |

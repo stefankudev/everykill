@@ -3,11 +3,31 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+/// How certain we are that a discovered folder belongs to an ecosystem.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Confidence {
+    #[default]
+    Certain,
+    Confirmed,
+    Ambiguous,
+    Undetected,
+}
+
+impl Confidence {
+    pub fn is_uncertain(self) -> bool {
+        matches!(self, Confidence::Ambiguous | Confidence::Undetected)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ecosystem {
     pub name: String,
     pub local: Vec<String>,
     pub global: Vec<String>,
+    /// Files/dirs in the project root that confirm this ecosystem (e.g. "Cargo.toml").
+    /// Empty means the ecosystem has no ambiguous patterns and needs no confirmation.
+    #[serde(default)]
+    pub markers: Vec<String>,
 }
 
 impl Ecosystem {
@@ -47,6 +67,7 @@ pub struct DiscoveredFolder {
     pub ecosystem: String,
     pub size_bytes: u64,
     pub selected: bool,
+    pub confidence: Confidence,
 }
 
 impl DiscoveredFolder {
@@ -56,6 +77,17 @@ impl DiscoveredFolder {
             ecosystem,
             size_bytes: 0,
             selected: false,
+            confidence: Confidence::Certain,
+        }
+    }
+
+    pub fn with_resolution(path: PathBuf, ecosystem: String, confidence: Confidence) -> Self {
+        Self {
+            path,
+            ecosystem,
+            size_bytes: 0,
+            selected: false,
+            confidence,
         }
     }
 }
@@ -104,6 +136,7 @@ mod tests {
             name: "Node.js".to_string(),
             local: vec!["node_modules/".to_string()],
             global: vec!["~/.npm/".to_string()],
+            markers: vec![],
         };
         assert!(eco.matches_folder("node_modules"));
         assert!(!eco.matches_folder("node_modules123"));
@@ -115,6 +148,7 @@ mod tests {
             name: "Rust".to_string(),
             local: vec!["target/".to_string(), "Cargo.lock".to_string()],
             global: vec![],
+            markers: vec![],
         };
         assert!(eco.matches_folder("target"));
         assert!(eco.matches_folder("Cargo.lock"));
