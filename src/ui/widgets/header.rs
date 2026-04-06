@@ -36,7 +36,7 @@ impl Widget for HeaderWidget {
             return;
         };
 
-        let style = Style::default().fg(Color::Cyan);
+        let style = Style::default().fg(Color::Red);
 
         for (row_idx, line_text) in art.lines().enumerate() {
             let y = area.top() + row_idx as u16;
