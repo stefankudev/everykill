@@ -1,5 +1,6 @@
 {
   "name": "Sphinx",
   "local": ["_build/"],
-  "global": []
+  "global": [],
+  "markers": ["conf.py"]
 }

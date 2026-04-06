@@ -1,5 +1,6 @@
 {
   "name": "Rust",
   "local": ["target/"],
-  "global": ["~/.cargo/registry/", "~/.cargo/git/"]
+  "global": ["~/.cargo/registry/", "~/.cargo/git/"],
+  "markers": ["Cargo.toml"]
 }

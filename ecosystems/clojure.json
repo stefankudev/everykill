@@ -1,5 +1,6 @@
 {
   "name": "Clojure",
   "local": ["target/", ".cpcache/"],
-  "global": ["~/.clojure/"]
+  "global": ["~/.clojure/"],
+  "markers": ["project.clj", "deps.edn", "build.boot"]
 }

@@ -1,5 +1,6 @@
 {
   "name": "Vite",
   "local": ["node_modules/", "dist/"],
-  "global": []
+  "global": [],
+  "markers": ["vite.config.js", "vite.config.ts"]
 }

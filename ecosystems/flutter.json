@@ -1,5 +1,6 @@
 {
   "name": "Flutter",
   "local": [".dart_tool/", ".pub-cache/", "build/"],
-  "global": ["~/.pub-cache/"]
+  "global": ["~/.pub-cache/"],
+  "markers": ["pubspec.yaml"]
 }

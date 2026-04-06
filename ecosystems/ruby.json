@@ -1,5 +1,6 @@
 {
   "name": "Ruby",
   "local": ["vendor/bundle/", ".bundle/"],
-  "global": ["~/.gem/ruby/*/cache/"]
+  "global": ["~/.gem/ruby/*/cache/"],
+  "markers": ["Gemfile"]
 }

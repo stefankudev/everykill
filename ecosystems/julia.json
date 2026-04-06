@@ -1,5 +1,6 @@
 {
   "name": "Julia",
   "local": ["deps/"],
-  "global": ["~/.julia/packages/", "~/.julia/artifacts/"]
+  "global": ["~/.julia/packages/", "~/.julia/artifacts/"],
+  "markers": ["Project.toml", "Manifest.toml"]
 }

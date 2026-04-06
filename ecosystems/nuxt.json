@@ -1,5 +1,6 @@
 {
   "name": "Nuxt",
   "local": [".nuxt/", "node_modules/"],
-  "global": []
+  "global": [],
+  "markers": ["nuxt.config.js", "nuxt.config.ts"]
 }

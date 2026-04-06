@@ -1,5 +1,6 @@
 {
   "name": "PHP",
   "local": ["vendor/"],
-  "global": ["~/.composer/"]
+  "global": ["~/.composer/"],
+  "markers": ["composer.json"]
 }

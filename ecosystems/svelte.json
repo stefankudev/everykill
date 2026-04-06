@@ -1,5 +1,6 @@
 {
   "name": "Svelte",
   "local": ["node_modules/"],
-  "global": []
+  "global": [],
+  "markers": ["svelte.config.js"]
 }

@@ -1,5 +1,6 @@
 {
   "name": "Webpack",
   "local": ["node_modules/", "dist/"],
-  "global": []
+  "global": [],
+  "markers": ["webpack.config.js"]
 }

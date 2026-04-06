@@ -1,5 +1,6 @@
 {
   "name": "Go",
   "local": ["vendor/"],
-  "global": ["~/go/pkg/mod/"]
+  "global": ["~/go/pkg/mod/"],
+  "markers": ["go.mod"]
 }
