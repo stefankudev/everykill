@@ -3,7 +3,7 @@
 ---
 
 ## Subfolder problem
-### (❌ UNSOLVED)
+### (🔄 IN PROGRESS)
 When a top level folder is detected (e.g. ./target), its subfolders (e.g. ./target/build/) shouldn't be listed. 
 
 ---
