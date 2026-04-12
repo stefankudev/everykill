@@ -69,7 +69,7 @@ everykill/
 │   ├── 44.txt            # 44 columns (smallest)
 │   └── 68.txt            # 68 columns (largest)
 ├── docs/
-│   ├── PROJECT_PLAN.md   # Implementation status & architecture
+│   ├── PROBLEMS.md      # Unresolved issues and feature requests
 │   └── ECOSYSTEMS.md     # Full ecosystem reference
 ├── clippy.toml           # Clippy lint configuration
 ├── Cargo.toml            # Rust package manifest
@@ -298,6 +298,7 @@ git commit -m "feat(ecosystems): add swift support"
 - [x] Ecosystem filter popup
 - [x] Deletion confirmation prompt with dry-run mode
 - [x] Panic-safe terminal restore
+- [x] Subfolder filtering (don't list subfolders of discovered folders)
 - [ ] Cross-platform testing (Windows)
 - [ ] Set up cargo-dist pipeline
 - [ ] First release

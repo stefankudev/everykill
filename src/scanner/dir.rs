@@ -1,6 +1,6 @@
 use crate::config::{Confidence, DiscoveredFolder, Ecosystem};
 use std::collections::HashSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 const SKIP_DIRS: &[&str] = &[".git", ".svn", ".hg", "node_modules/.cache", ".cache"];
 
@@ -80,6 +80,7 @@ pub fn scan_directory(
 ) -> Vec<DiscoveredFolder> {
     let mut folders = Vec::new();
     let mut seen_inodes: HashSet<u64> = HashSet::new();
+    let mut discovered_prefixes: HashSet<PathBuf> = HashSet::new();
 
     let mut walker = walkdir::WalkDir::new(root).follow_links(false);
 
@@ -112,14 +113,23 @@ pub fn scan_directory(
                         seen_inodes.insert(inode);
                     }
 
-                    let project_root = entry.path().parent().unwrap_or(entry.path());
+                    let entry_path = entry.path().to_path_buf();
+                    if discovered_prefixes
+                        .iter()
+                        .any(|prefix| entry_path.starts_with(prefix))
+                    {
+                        continue;
+                    }
+
+                    let project_root = entry_path.parent().unwrap_or(&entry_path);
                     let resolved = resolve_ecosystem(&candidates, project_root);
 
                     folders.push(DiscoveredFolder::with_resolution(
-                        entry.path().to_path_buf(),
+                        entry_path.clone(),
                         resolved.label,
                         resolved.confidence,
                     ));
+                    discovered_prefixes.insert(entry_path);
                 }
             }
             Err(e) => {
@@ -249,5 +259,66 @@ mod tests {
         assert!(!folders
             .iter()
             .any(|f| f.path.to_string_lossy().contains(".cache")));
+    }
+
+    #[test]
+    fn test_scan_filters_target_subfolders() {
+        let temp_dir = TempDir::new().unwrap();
+        let project_dir = temp_dir.path();
+
+        fs::create_dir_all(project_dir.join("target/build")).unwrap();
+        fs::create_dir_all(project_dir.join("target/debug")).unwrap();
+
+        let ecosystems = vec![Ecosystem {
+            name: "Rust".to_string(),
+            local: vec!["target/".to_string()],
+            global: vec![],
+            markers: vec![],
+        }];
+
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
+
+        assert_eq!(folders.len(), 1);
+        assert!(folders[0].path.ends_with("target"));
+    }
+
+    #[test]
+    fn test_scan_does_not_filter_similar_names() {
+        let temp_dir = TempDir::new().unwrap();
+        let project_dir = temp_dir.path();
+
+        fs::create_dir_all(project_dir.join("vendor")).unwrap();
+        fs::create_dir_all(project_dir.join("target")).unwrap();
+
+        let ecosystems = vec![Ecosystem {
+            name: "Go".to_string(),
+            local: vec!["vendor/".to_string(), "target/".to_string()],
+            global: vec![],
+            markers: vec![],
+        }];
+
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
+
+        assert_eq!(folders.len(), 2);
+    }
+
+    #[test]
+    fn test_scan_filters_deeply_nested_subfolders() {
+        let temp_dir = TempDir::new().unwrap();
+        let project_dir = temp_dir.path();
+
+        fs::create_dir_all(project_dir.join("target/debug/deps/foo")).unwrap();
+
+        let ecosystems = vec![Ecosystem {
+            name: "Rust".to_string(),
+            local: vec!["target/".to_string()],
+            global: vec![],
+            markers: vec![],
+        }];
+
+        let folders = scan_directory(project_dir, &ecosystems, true, &[], false, None);
+
+        assert_eq!(folders.len(), 1);
+        assert!(folders[0].path.ends_with("target"));
     }
 }
