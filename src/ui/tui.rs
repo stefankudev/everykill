@@ -92,15 +92,7 @@ fn restore_terminal_raw() -> io::Result<()> {
 
 fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
     let (tx, rx) = mpsc::channel::<ScanEvent>();
-
-    let scan_path = args.get_scan_path();
-    let include_globals = args.should_include_globals();
-    let excluded_dirs = args.get_excluded_dirs();
-    let exclude_hidden = args.exclude_hidden;
-    let depth_limit = args.get_depth_limit();
-    // Clone args fields needed for ecosystem filtering
-    let target = args.target.clone();
-    let all = args.all;
+    let args_clone = args.clone();
 
     thread::spawn(move || {
         // Load ecosystems inside thread to avoid Send issues with the main load
@@ -112,28 +104,16 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
             }
         };
 
-        // Filter ecosystems the same way Args does (inline to avoid borrowing args)
-        let target_ecosystems: Vec<_> = if all {
-            ecosystems.clone()
-        } else if let Some(ref t) = target {
-            let names: Vec<String> = t.split(',').map(|s| s.trim().to_lowercase()).collect();
-            ecosystems
-                .iter()
-                .filter(|e| names.contains(&e.name.to_lowercase()))
-                .cloned()
-                .collect()
-        } else {
-            ecosystems.clone()
-        };
+        let target_ecosystems = args_clone.get_ecosystems(&ecosystems);
 
         // Scan
         let folders = scanner::scan_directory(
-            &scan_path,
+            &args_clone.get_scan_path(),
             &target_ecosystems,
-            include_globals,
-            &excluded_dirs,
-            exclude_hidden,
-            depth_limit,
+            args_clone.should_include_globals(),
+            &args_clone.get_excluded_dirs(),
+            args_clone.exclude_hidden,
+            args_clone.get_depth_limit(),
         );
 
         // Send each folder as it's "found" (scan_directory returns a batch, so we stream them)
