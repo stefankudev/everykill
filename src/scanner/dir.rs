@@ -106,11 +106,11 @@ pub fn scan_directory(
                         continue;
                     }
 
-                    if let Ok(inode) = get_inode(entry.path()) {
-                        if seen_inodes.contains(&inode) {
+                    if let Some(id) = get_unique_id(entry.path()) {
+                        if seen_inodes.contains(&id) {
                             continue;
                         }
-                        seen_inodes.insert(inode);
+                        seen_inodes.insert(id);
                     }
 
                     let entry_path = entry.path().to_path_buf();
@@ -178,10 +178,18 @@ fn should_skip(name: &std::ffi::OsStr) -> bool {
     SKIP_DIRS.iter().any(|s| name_str == *s)
 }
 
-fn get_inode(path: &Path) -> std::io::Result<u64> {
+#[cfg(unix)]
+fn get_unique_id(path: &Path) -> Option<u64> {
     use std::os::unix::fs::MetadataExt;
-    let metadata = std::fs::metadata(path)?;
-    Ok(metadata.ino())
+    std::fs::metadata(path).ok().map(|m| m.ino())
+}
+
+#[cfg(not(unix))]
+fn get_unique_id(_path: &Path) -> Option<u64> {
+    // On non-Unix platforms, we don't have a stable way to get a unique ID
+    // without unstable features or extra dependencies. Since we don't follow
+    // links, path-based uniqueness is sufficient.
+    None
 }
 
 // ---------------------------------------------------------------------------
