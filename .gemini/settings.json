@@ -1,0 +1,20 @@
+{
+  "skills": {
+    "enabled": [
+      "skill-creator"
+    ],
+    "disabled": [
+      "microsoft-foundry"
+    ]
+  },
+  "mcpServers": {
+    "rust": {
+      "command": "rust-mcp-server",
+      "args": [],
+      "env": {
+        "PATH": "$PATH"
+      },
+      "trust": true
+    }
+  }
+}
