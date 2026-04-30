@@ -5,23 +5,25 @@ pub mod scanner;
 pub mod size_util;
 pub mod ui;
 
+use anyhow::Context;
 use args::Args;
 use clap::Parser;
 use deleter::{delete_folders, print_delete_summary};
 use size_util::format_size;
 
-pub fn run() {
+pub fn run() -> anyhow::Result<()> {
     let args = Args::parse();
 
     if args.no_tui {
-        run_plain(args);
+        run_plain(args)
     } else {
-        ui::tui::run_tui(args).expect("TUI failed");
+        ui::tui::run_tui(args)
     }
 }
 
-pub fn run_plain(args: Args) {
-    let ecosystems = config::load_ecosystems().expect("failed to load ecosystems");
+pub fn run_plain(args: Args) -> anyhow::Result<()> {
+    let ecosystems =
+        config::load_ecosystems().context("Failed to load ecosystem configurations")?;
     let target_ecosystems = args.get_ecosystems(&ecosystems);
     let include_globals = args.should_include_globals();
     let excluded_dirs = args.get_excluded_dirs();
@@ -80,4 +82,6 @@ pub fn run_plain(args: Args) {
             );
         }
     }
+
+    Ok(())
 }
