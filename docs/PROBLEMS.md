@@ -7,11 +7,10 @@
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [Critical Issues (Block Release)](#critical-issues-block-release)
-3. [High-Priority Issues (Fix Before v1.0)](#high-priority-issues-fix-before-v10)
-4. [Medium-Priority Issues (Follow-Up PRs)](#medium-priority-issues-follow-up-prs)
-5. [Low-Priority Issues (Optional)](#low-priority-issues-optional)
-6. [Epic Issues / Feature Gaps](#epic-issues--feature-gaps)
+2. [High-Priority Issues (Fix Before v1.0)](#high-priority-issues-fix-before-v10)
+3. [Medium-Priority Issues (Follow-Up PRs)](#medium-priority-issues-follow-up-prs)
+4. [Low-Priority Issues (Optional)](#low-priority-issues-optional)
+5. [Epic Issues / Feature Gaps](#epic-issues--feature-gaps)
 
 ---
 
@@ -24,72 +23,6 @@ Additionally, **3 high-priority issues** affect error handling and UX, and **11 
 Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md that need to be addressed for a complete v1.0 release (CI/CD pipelines, binary building, ecosystem markers, marketing).
 
 **With ~2 hours of focused work** on critical/high items + **addressing the epic features**, this project will be ready for v1.0.
-
----
-
-## Critical Issues (Block Release)
-
-### 🔴 CRITICAL #1: Windows Compilation Broken
-
-**Status:** ✅ SOLVED  
-**Location:** `src/scanner/dir.rs:181-185`  
-**Severity:** CRITICAL  
-**Effort:** 30 minutes
-
-**Problem:**
-
-The `get_inode()` function uses Unix-only APIs:
-```rust
-fn get_inode(path: &Path) -> std::io::Result<u64> {
-    use std::os::unix::fs::MetadataExt;  // ← NOT AVAILABLE ON WINDOWS
-    let metadata = std::fs::metadata(path)?;
-    Ok(metadata.ino())
-}
-```
-
-**Solution:**
-
-Added conditional compilation to provide a stable, cross-platform implementation. On Unix, it continues to use inodes. On Windows and other platforms, it returns an error, causing the scanner to gracefully skip inode-based deduplication and rely on path-based deduplication (which is already implemented via `discovered_prefixes`).
-
-```rust
-#[cfg(unix)]
-fn get_inode(path: &Path) -> std::io::Result<u64> {
-    use std::os::unix::fs::MetadataExt;
-    let metadata = std::fs::metadata(path)?;
-    Ok(metadata.ino())
-}
-
-#[cfg(not(unix))]
-fn get_inode(_path: &Path) -> std::io::Result<u64> {
-    // On Windows, we can't use inodes. Return error or fallback to path-based dedup.
-    Err(std::io::Error::new(
-        std::io::ErrorKind::Other,
-        "inode tracking not supported on this platform",
-    ))
-}
-```
-
----
-
-### 🔴 CRITICAL #2: Ecosystem Filtering Logic Mismatch
-
-**Status:** ✅ SOLVED  
-**Location:** `src/ui/tui.rs:115-127` vs `src/args.rs:94-110`  
-**Severity:** CRITICAL  
-**Effort:** 15 minutes
-
-**Problem:**
-
-The TUI background scan thread reimplements ecosystem filtering logic, creating code duplication and potential divergence in behavior.
-
-**Solution:**
-
-Refactored `spawn_scan_thread` in `src/ui/tui.rs` to clone the `Args` struct and call its existing `get_ecosystems()` method. This ensures that filtering logic is unified and consistent across both the TUI and plain-text modes.
-
-```rust
-// In src/ui/tui.rs
-let target_ecosystems = args_clone.get_ecosystems(&ecosystems);
-```
 
 ---
 
