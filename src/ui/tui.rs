@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::io::{self, Stdout};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -34,17 +35,23 @@ use crate::ui::widgets::{
 // Tick rate for the event loop (~60 fps)
 const TICK_MS: u64 = 16;
 
+// Guard to prevent double-wrapping of panic hook
+static PANIC_HOOK_SET: AtomicBool = AtomicBool::new(false);
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
 
 pub fn run_tui(args: Args) -> anyhow::Result<()> {
     // Install panic hook to restore terminal before printing panic details
-    let original_hook = std::panic::take_hook();
-    std::panic::set_hook(Box::new(move |info| {
-        let _ = restore_terminal_raw();
-        original_hook(info);
-    }));
+    // Use atomic flag to prevent re-wrapping on multiple invocations
+    if !PANIC_HOOK_SET.swap(true, Ordering::SeqCst) {
+        let original_hook = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |info| {
+            let _ = restore_terminal_raw();
+            original_hook(info);
+        }));
+    }
 
     let mut terminal = setup_terminal()?;
     let result = run_app(&mut terminal, args);
