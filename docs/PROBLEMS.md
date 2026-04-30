@@ -28,21 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## Medium-Priority Issues (Follow-Up PRs)
 
-### 🟡 MEDIUM #6: Integer Overflow in Size Calculation
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/scanner/size.rs`  
-**Severity:** MEDIUM  
-**Effort:** 10 minutes
-
-**Problem:** Size accumulation uses `u64` (max ~18.4 EB) without overflow checking.
-
-**Risk:** Very low in practice (modern disks ~100TB), but theoretically unsound.
-
-**Fix:** Use `checked_add()` with error handling.
-
----
-
 ### 🟡 MEDIUM #7: Hardcoded SKIP_DIRS Not Configurable
 
 **Status:** ❌ UNSOLVED  
