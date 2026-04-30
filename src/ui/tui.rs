@@ -107,6 +107,7 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
             Ok(e) => e,
             Err(err) => {
                 let _ = tx.send(ScanEvent::Error(err.to_string()));
+                eprintln!("Warning: scan thread failed to load ecosystems: {}", err);
                 return;
             }
         };
@@ -126,7 +127,8 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
         // Send each folder as it's "found" (scan_directory returns a batch, so we stream them)
         for folder in &folders {
             if tx.send(ScanEvent::FolderFound(folder.clone())).is_err() {
-                return; // receiver dropped (user quit)
+                eprintln!("Debug: scan thread exiting - receiver dropped (user quit)");
+                return;
             }
         }
 
@@ -142,6 +144,7 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
                 })
                 .is_err()
             {
+                eprintln!("Debug: scan thread exiting - receiver dropped (user quit)");
                 return;
             }
         }

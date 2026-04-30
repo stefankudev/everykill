@@ -28,21 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## Medium-Priority Issues (Follow-Up PRs)
 
-### 🟡 MEDIUM #8: Background Thread Termination Is Silent
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/ui/tui.rs:140-144`  
-**Severity:** MEDIUM  
-**Effort:** 5 minutes
-
-**Problem:** Thread exits with no logging if receiver drops.
-
-**Impact:** Hard to debug if thread exits unexpectedly.
-
-**Fix:** Add `eprintln!()` to log reason.
-
----
-
 ### 🟡 MEDIUM #9: Unused Parameter in Render Function
 
 **Status:** ❌ UNSOLVED  
