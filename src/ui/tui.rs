@@ -302,7 +302,7 @@ fn handle_key_normal(state: &mut AppState, key: KeyCode, viewport_height: usize)
             } else {
                 "Dry-run OFF — deletions are permanent".to_string()
             };
-state.show_status(msg);
+            state.show_status(msg);
         }
 
         // Filter popup
