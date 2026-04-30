@@ -169,6 +169,9 @@ fn run_app(terminal: &mut Terminal<CrosstermBackend<Stdout>>, args: Args) -> any
             state.handle_scan_event(event);
         }
 
+        // Clear expired status messages
+        state.clear_expired_status();
+
         // Render
         let term_size = terminal.size().unwrap_or_default();
         let term_width = term_size.width;
@@ -266,9 +269,6 @@ fn render(
 // ---------------------------------------------------------------------------
 
 fn handle_key(state: &mut AppState, key: KeyCode, viewport_height: usize) -> bool {
-    // Clear transient status message on any key
-    state.status_message = None;
-
     match &state.mode {
         AppMode::Normal => handle_key_normal(state, key, viewport_height),
         AppMode::FilterPopup => {
@@ -302,7 +302,7 @@ fn handle_key_normal(state: &mut AppState, key: KeyCode, viewport_height: usize)
             } else {
                 "Dry-run OFF — deletions are permanent".to_string()
             };
-            state.status_message = Some(msg);
+state.show_status(msg);
         }
 
         // Filter popup
@@ -362,7 +362,7 @@ fn execute_deletion(state: &mut AppState) {
     let summary = delete_folders(&state.folders, state.dry_run);
 
     if state.dry_run {
-        state.status_message = Some(format!(
+        state.show_status(format!(
             "Dry-run: would free {} from {} folder(s)",
             crate::size_util::format_size(summary.freed_bytes),
             summary.deleted_count
@@ -390,7 +390,7 @@ fn execute_deletion(state: &mut AppState) {
                 summary.errors.len()
             )
         };
-        state.status_message = Some(msg);
+        state.show_status(msg);
     }
 }
 
