@@ -28,54 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## High-Priority Issues (Fix Before v1.0)
 
-### 🟠 HIGH #4: Dangerous Panic Hook Re-wrapping
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/ui/tui.rs:42-47`  
-**Severity:** HIGH  
-**Effort:** 20 minutes
-
-**Problem:**
-
-Panic hook is set unconditionally, risking double-wrapping on multiple invocations:
-
-```rust
-let original_hook = std::panic::take_hook();
-std::panic::set_hook(Box::new(move |info| {
-    let _ = restore_terminal_raw();
-    original_hook(info);
-}));
-```
-
-**Risks:**
-- If called twice, the second invocation wraps the already-wrapped hook (nesting)
-- If wrapped hook panics, recursion occurs
-- Terminal might not be restored if panic hook itself panics
-
-**Recommended Fix:**
-
-Use atomic flag to prevent re-wrapping:
-```rust
-use std::sync::atomic::{AtomicBool, Ordering};
-
-static PANIC_HOOK_SET: AtomicBool = AtomicBool::new(false);
-
-pub fn run_tui(args: Args) -> anyhow::Result<()> {
-    // Only install panic hook once
-    if !PANIC_HOOK_SET.swap(true, Ordering::SeqCst) {
-        let original_hook = std::panic::take_hook();
-        std::panic::set_hook(Box::new(move |info| {
-            let _ = restore_terminal_raw();
-            original_hook(info);
-        }));
-    }
-    
-    // Rest of function...
-}
-```
-
----
-
 ### 🟠 HIGH #5: Status Messages Cleared Immediately
 
 **Status:** ❌ UNSOLVED  
