@@ -43,7 +43,7 @@ pub fn run_plain(args: Args) -> anyhow::Result<()> {
     let folders = match args.sort {
         Some(args::SortBy::Size) => {
             let mut folders = folders;
-            folders.sort_by(|a, b| b.size_bytes.cmp(&a.size_bytes));
+            folders.sort_by_key(|b| std::cmp::Reverse(b.size_bytes));
             folders
         }
         Some(args::SortBy::Path) => {
