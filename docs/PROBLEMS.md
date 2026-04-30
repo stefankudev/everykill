@@ -28,67 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## High-Priority Issues (Fix Before v1.0)
 
-### 🟠 HIGH #3: Error Handling Divergence
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/lib.rs:13-20`  
-**Severity:** HIGH  
-**Effort:** 20 minutes
-
-**Problem:**
-
-The main `run()` function has inconsistent error handling:
-```rust
-pub fn run() {
-    let args = Args::parse();
-    if args.no_tui {
-        run_plain(args);  // ← Silently swallows errors
-    } else {
-        ui::tui::run_tui(args).expect("TUI failed");  // ← Can panic!
-    }
-}
-```
-
-- TUI mode can panic with generic "TUI failed" message (no context)
-- Plain-text mode silently swallows errors inside `run_plain()`
-- `run()` itself doesn't return a Result, so callers can't handle errors gracefully
-
-**Example failures:**
-- Corrupt ecosystem JSON → unhelpful panic
-- Permission denied during deletion → silent failure
-- Terminal setup fails → cryptic panic
-
-**Recommended Fix:**
-
-Make `run()` return `Result<()>` and propagate errors:
-```rust
-pub fn run() -> anyhow::Result<()> {
-    let args = Args::parse();
-    if args.no_tui {
-        run_plain(args)
-    } else {
-        ui::tui::run_tui(args)
-    }
-}
-
-pub fn run_plain(args: Args) -> anyhow::Result<()> {
-    let ecosystems = config::load_ecosystems()
-        .context("Failed to load ecosystem configurations")?;
-    // ... rest of function ...
-    Ok(())
-}
-
-// In main.rs:
-fn main() {
-    if let Err(e) = everykill::run() {
-        eprintln!("Error: {}", e);
-        std::process::exit(1);
-    }
-}
-```
-
----
-
 ### 🟠 HIGH #4: Dangerous Panic Hook Re-wrapping
 
 **Status:** ❌ UNSOLVED  
