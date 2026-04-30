@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 use crate::config::DiscoveredFolder;
 
@@ -66,6 +67,8 @@ pub struct AppState {
 
     /// Transient status message shown in footer (errors, dry-run output, etc.)
     pub status_message: Option<String>,
+    /// Timestamp when status_message was set (for auto-clear)
+    pub status_message_timestamp: Option<Instant>,
 }
 
 impl AppState {
@@ -83,6 +86,21 @@ impl AppState {
             total_selected_bytes: 0,
             selected_count: 0,
             status_message: None,
+            status_message_timestamp: None,
+        }
+    }
+
+    pub fn show_status(&mut self, message: String) {
+        self.status_message = Some(message);
+        self.status_message_timestamp = Some(Instant::now());
+    }
+
+    pub fn clear_expired_status(&mut self) {
+        if let Some(timestamp) = self.status_message_timestamp {
+            if timestamp.elapsed() > Duration::from_secs(5) {
+                self.status_message = None;
+                self.status_message_timestamp = None;
+            }
         }
     }
 
