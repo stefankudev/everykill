@@ -28,24 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## Medium-Priority Issues (Follow-Up PRs)
 
-### 🟡 MEDIUM #7: Hardcoded SKIP_DIRS Not Configurable
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/scanner/dir.rs:5`  
-**Severity:** MEDIUM  
-**Effort:** 15 minutes
-
-**Problem:**
-```rust
-const SKIP_DIRS: &[&str] = &[".git", ".svn", ".hg", "node_modules/.cache", ".cache"];
-```
-
-Can't override `.git`, `.svn`, etc. even with `--exclude` flag. What if user wants to scan inside version control dirs for a size audit?
-
-**Fix:** Add `--no-skip-hidden` flag or merge with `--exclude` logic.
-
----
-
 ### 🟡 MEDIUM #8: Background Thread Termination Is Silent
 
 **Status:** ❌ UNSOLVED  

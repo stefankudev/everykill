@@ -88,9 +88,16 @@ pub fn scan_directory(
         walker = walker.max_depth(depth);
     }
 
+    let mut all_exclude_dirs: Vec<String> = exclude_dirs.to_vec();
+    for &skip in SKIP_DIRS {
+        if !all_exclude_dirs.contains(&skip.to_string()) {
+            all_exclude_dirs.push(skip.to_string());
+        }
+    }
+
     for entry in walker
         .into_iter()
-        .filter_entry(|e| !should_skip_entry(e, exclude_dirs, exclude_hidden))
+        .filter_entry(|e| !should_skip_entry(e, &all_exclude_dirs, exclude_hidden))
     {
         match entry {
             Ok(entry) => {
@@ -140,7 +147,7 @@ pub fn scan_directory(
 
     folders
         .into_iter()
-        .filter(|f| !path_contains_skip_dir(&f.path))
+        .filter(|f| !path_contains_skip_dir(&f.path, &all_exclude_dirs))
         .collect()
 }
 
@@ -156,26 +163,18 @@ fn should_skip_entry(
         return true;
     }
 
-    if exclude_dirs.iter().any(|d| name_str == *d) {
-        return true;
-    }
-
-    SKIP_DIRS.contains(&name_str.as_ref())
+    exclude_dirs.iter().any(|d| name_str == *d)
 }
 
-fn path_contains_skip_dir(path: &Path) -> bool {
+fn path_contains_skip_dir(path: &Path, exclude_dirs: &[String]) -> bool {
     path.components().any(|c| {
         if let std::path::Component::Normal(name) = c {
-            should_skip(name)
+            let name_str = name.to_string_lossy();
+            exclude_dirs.iter().any(|d| name_str == *d)
         } else {
             false
         }
     })
-}
-
-fn should_skip(name: &std::ffi::OsStr) -> bool {
-    let name_str = name.to_string_lossy();
-    SKIP_DIRS.iter().any(|s| name_str == *s)
 }
 
 #[cfg(unix)]
