@@ -45,46 +45,6 @@ If deletion fails midway (e.g., permission denied on subdir), folder is partiall
 
 ---
 
-### 🟡 MEDIUM #15: Wrong Default for Confidence Enum
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/config/ecosystem.rs:8`  
-**Severity:** MEDIUM  
-**Effort:** 5 minutes
-
-**Problem:**
-```rust
-#[derive(Default)]
-pub enum Confidence {
-    #[default]
-    Certain,  // ← But should be Undetected!
-    ...
-}
-```
-
-When `DiscoveredFolder::new()` is called directly (in tests), confidence defaults to Certain. But folders are only "Certain" if they matched unambiguously.
-
-**Fix:** Change default to `Undetected`.
-
----
-
-### 🟡 MEDIUM #16: Unclear Default Ecosystem Behavior
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/args.rs:107-109`  
-**Severity:** MEDIUM  
-**Effort:** 15 minutes
-
-**Problem:**
-
-Documentation claims "use local patterns when no --target", but code returns ALL ecosystems when neither `--all` nor `--target` specified.
-
-**Impact:** Ambiguous intended behavior; hard to maintain.
-
-**Fix:** Clarify docs or change implementation to match intended design.
-
----
-
 ## Low-Priority Issues (Optional)
 
 ### 🟢 LOW #17-25: Nine Low-Priority Improvements

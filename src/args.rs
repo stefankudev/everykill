@@ -90,7 +90,8 @@ impl Args {
         }
     }
 
-    /// Get ecosystems to scan
+    /// Get ecosystems to scan.
+    /// Returns all ecosystems when neither `--all` nor `--target` is specified.
     pub fn get_ecosystems(&self, all_ecosystems: &[Ecosystem]) -> Vec<Ecosystem> {
         if self.all {
             all_ecosystems.to_vec()

@@ -6,10 +6,10 @@ use std::path::{Path, PathBuf};
 /// How certain we are that a discovered folder belongs to an ecosystem.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Confidence {
-    #[default]
     Certain,
     Confirmed,
     Ambiguous,
+    #[default]
     Undetected,
 }
 
