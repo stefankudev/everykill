@@ -103,6 +103,9 @@ pub fn load_ecosystems() -> anyhow::Result<Vec<Ecosystem>> {
             Err(e) => eprintln!("Warning: glob error: {}", e),
         }
     }
+    if ecosystems.is_empty() {
+        return Err(anyhow::anyhow!("No valid ecosystems found in ecosystems/"));
+    }
     Ok(ecosystems)
 }
 
