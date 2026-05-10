@@ -179,9 +179,7 @@ fn run_app(terminal: &mut Terminal<CrosstermBackend<Stdout>>, args: Args) -> any
         let term_size = terminal.size().unwrap_or_default();
         let term_width = term_size.width;
         terminal.draw(|frame| {
-            let area = frame.area();
-            let viewport_height = compute_list_height(area.height, term_width) as usize;
-            render(frame, &mut state, term_width, viewport_height);
+            render(frame, &mut state, term_width);
         })?;
 
         // Poll for input with remaining tick budget
@@ -241,7 +239,6 @@ fn render(
     frame: &mut ratatui::Frame,
     state: &mut AppState,
     term_width: u16,
-    _viewport_height: usize,
 ) {
     let area = frame.area();
     let (header_area, list_area, footer_area) = build_layout(area, term_width);

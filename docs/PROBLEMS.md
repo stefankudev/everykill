@@ -28,54 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## Medium-Priority Issues (Follow-Up PRs)
 
-### 🟡 MEDIUM #9: Unused Parameter in Render Function
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/ui/tui.rs:251`  
-**Severity:** MEDIUM  
-**Effort:** 5 minutes
-
-**Problem:** `_viewport_height` parameter is accepted but never used.
-
-**Fix:** Remove if unused, or implement if future optimization planned.
-
----
-
-### 🟡 MEDIUM #10: Mouse Click Bounds Checking Incomplete
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/ui/tui.rs:433-434`  
-**Severity:** MEDIUM  
-**Effort:** 15 minutes
-
-**Problem:**
-```rust
-let visible_row = list_row + state.scroll_offset;  // ← No bounds check before indexing
-```
-
-**Risk:** Index out of bounds panic if clicking below visible list.
-
-**Fix:** Add bounds check before using `visible_row`.
-
----
-
-### 🟡 MEDIUM #11: Duplicate Ecosystem Filtering Logic
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/args.rs:94-110` + `src/ui/tui.rs:115-127`  
-**Severity:** MEDIUM  
-**Effort:** 20 minutes
-
-**Problem:** Same filtering logic in two places.
-
-**Impact:** Changes must be mirrored; risk of divergence.
-
-**Fix:** Extract to shared function or call `args.get_ecosystems()` instead of reimplementing.
-
-*(Also mentioned in CRITICAL #2)*
-
----
-
 ### 🟡 MEDIUM #12: No Validation of Ecosystem Configuration Files
 
 **Status:** ❌ UNSOLVED  
