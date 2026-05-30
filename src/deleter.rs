@@ -39,7 +39,7 @@ pub fn delete_folders(folders: &[DiscoveredFolder], dry_run: bool) -> DeleteSumm
             summary.deleted_count += 1;
             summary.freed_bytes += folder.size_bytes;
         } else {
-            match std::fs::remove_dir_all(&folder.path) {
+            match trash::delete(&folder.path) {
                 Ok(_) => {
                     println!(
                         "Deleted: {} ({} - {})",

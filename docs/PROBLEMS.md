@@ -28,23 +28,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 
 ## Medium-Priority Issues (Follow-Up PRs)
 
-### 🟡 MEDIUM #14: No Recovery From Partial Deletion
-
-**Status:** ❌ UNSOLVED  
-**Location:** `src/deleter.rs:24-65`  
-**Severity:** MEDIUM  
-**Effort:** 60 minutes
-
-**Problem:**
-
-If deletion fails midway (e.g., permission denied on subdir), folder is partially deleted but app reports success.
-
-**Impact:** Folder partially deleted; next run might not find it; user doesn't know cleanup is incomplete.
-
-**Note:** Requires adding the `trash` crate as a dependency to enable safe deletion with trash/recovery support. Out of scope for current fix iteration.
-
----
-
 ## Low-Priority Issues (Optional)
 
 ### 🟢 LOW #17-25: Nine Low-Priority Improvements
