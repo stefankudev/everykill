@@ -7,10 +7,8 @@
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [High-Priority Issues (Fix Before v1.0)](#high-priority-issues-fix-before-v10)
-3. [Medium-Priority Issues (Follow-Up PRs)](#medium-priority-issues-follow-up-prs)
-4. [Low-Priority Issues (Optional)](#low-priority-issues-optional)
-5. [Epic Issues / Feature Gaps](#epic-issues--feature-gaps)
+2. [Low-Priority Issues (Optional)](#low-priority-issues-optional)
+3. [Epic Issues / Feature Gaps](#epic-issues--feature-gaps)
 
 ---
 
@@ -18,15 +16,11 @@
 
 The everykill project demonstrates **excellent software engineering practices** with a well-architected Rust codebase, comprehensive testing (47 unit tests), and smart algorithms. All **critical issues** have been resolved for the v1.0 release.
 
-Additionally, **3 high-priority issues** affect error handling and UX, and **11 medium-priority issues** need attention for robustness.
-
 Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md that need to be addressed for a complete v1.0 release (CI/CD pipelines, binary building, ecosystem markers, marketing).
 
 **With ~2 hours of focused work** on critical/high items + **addressing the epic features**, this project will be ready for v1.0.
 
 ---
-
-## Medium-Priority Issues (Follow-Up PRs)
 
 ## Low-Priority Issues (Optional)
 
