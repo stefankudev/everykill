@@ -235,11 +235,7 @@ fn build_layout(area: Rect, term_width: u16) -> (Rect, Rect, Rect) {
 // Rendering
 // ---------------------------------------------------------------------------
 
-fn render(
-    frame: &mut ratatui::Frame,
-    state: &mut AppState,
-    term_width: u16,
-) {
+fn render(frame: &mut ratatui::Frame, state: &mut AppState, term_width: u16) {
     let area = frame.area();
     let (header_area, list_area, footer_area) = build_layout(area, term_width);
 
