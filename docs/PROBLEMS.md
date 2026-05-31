@@ -1,24 +1,6 @@
 # Everykill - Issues & Code Review Combined
 
-**Last Updated:** 2026-04-12
-
----
-
-## Table of Contents
-
-1. [Executive Summary](#executive-summary)
-2. [Low-Priority Issues (Optional)](#low-priority-issues-optional)
-3. [Epic Issues / Feature Gaps](#epic-issues--feature-gaps)
-
----
-
-## Executive Summary
-
-The everykill project demonstrates **excellent software engineering practices** with a well-architected Rust codebase, comprehensive testing (47 unit tests), and smart algorithms. All **critical issues** have been resolved for the v1.0 release.
-
-Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md that need to be addressed for a complete v1.0 release (CI/CD pipelines, binary building, ecosystem markers, marketing).
-
-**With ~2 hours of focused work** on critical/high items + **addressing the epic features**, this project will be ready for v1.0.
+**Last Updated:** 2026-05-31
 
 ---
 
@@ -36,15 +18,6 @@ Beyond code quality issues, there are **6 major feature gaps** from PROBLEMS.md 
 6. **Confidence algorithm undocumented** - 20 min
 7. **Keybindings hardcoded** (should extract to constant) - 10 min
 8. **Plus 2 additional minor items** - varies
-
----
-
-## Epic Issues / Feature Gaps
-
-### ✅ SOLVED: Subfolder Filtering Problem
-
-**Status:** ✅ SOLVED  
-**Solution:** Implemented in `src/scanner/dir.rs` using `discovered_prefixes` HashSet to track and filter descendant paths. When `./target` is detected, its subfolders like `./target/build/` are not listed separately.
 
 ---
 
