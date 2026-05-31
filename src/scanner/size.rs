@@ -11,7 +11,7 @@ pub fn calculate_size(path: &Path) -> std::io::Result<u64> {
     {
         if entry.file_type().is_file() {
             if let Ok(metadata) = entry.metadata() {
-                total_size += metadata.len();
+                total_size = total_size.saturating_add(metadata.len());
             }
         }
     }

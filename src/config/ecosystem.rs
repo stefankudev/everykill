@@ -6,10 +6,10 @@ use std::path::{Path, PathBuf};
 /// How certain we are that a discovered folder belongs to an ecosystem.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Confidence {
-    #[default]
     Certain,
     Confirmed,
     Ambiguous,
+    #[default]
     Undetected,
 }
 
@@ -102,6 +102,9 @@ pub fn load_ecosystems() -> anyhow::Result<Vec<Ecosystem>> {
             },
             Err(e) => eprintln!("Warning: glob error: {}", e),
         }
+    }
+    if ecosystems.is_empty() {
+        return Err(anyhow::anyhow!("No valid ecosystems found in ecosystems/"));
     }
     Ok(ecosystems)
 }

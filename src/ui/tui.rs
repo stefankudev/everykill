@@ -107,6 +107,7 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
             Ok(e) => e,
             Err(err) => {
                 let _ = tx.send(ScanEvent::Error(err.to_string()));
+                eprintln!("Warning: scan thread failed to load ecosystems: {}", err);
                 return;
             }
         };
@@ -126,7 +127,8 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
         // Send each folder as it's "found" (scan_directory returns a batch, so we stream them)
         for folder in &folders {
             if tx.send(ScanEvent::FolderFound(folder.clone())).is_err() {
-                return; // receiver dropped (user quit)
+                eprintln!("Debug: scan thread exiting - receiver dropped (user quit)");
+                return;
             }
         }
 
@@ -142,6 +144,7 @@ fn spawn_scan_thread(args: &Args) -> Receiver<ScanEvent> {
                 })
                 .is_err()
             {
+                eprintln!("Debug: scan thread exiting - receiver dropped (user quit)");
                 return;
             }
         }
@@ -176,9 +179,7 @@ fn run_app(terminal: &mut Terminal<CrosstermBackend<Stdout>>, args: Args) -> any
         let term_size = terminal.size().unwrap_or_default();
         let term_width = term_size.width;
         terminal.draw(|frame| {
-            let area = frame.area();
-            let viewport_height = compute_list_height(area.height, term_width) as usize;
-            render(frame, &mut state, term_width, viewport_height);
+            render(frame, &mut state, term_width);
         })?;
 
         // Poll for input with remaining tick budget
@@ -234,12 +235,7 @@ fn build_layout(area: Rect, term_width: u16) -> (Rect, Rect, Rect) {
 // Rendering
 // ---------------------------------------------------------------------------
 
-fn render(
-    frame: &mut ratatui::Frame,
-    state: &mut AppState,
-    term_width: u16,
-    _viewport_height: usize,
-) {
+fn render(frame: &mut ratatui::Frame, state: &mut AppState, term_width: u16) {
     let area = frame.area();
     let (header_area, list_area, footer_area) = build_layout(area, term_width);
 
