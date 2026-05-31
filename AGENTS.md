@@ -89,16 +89,16 @@ everykill/
 - Helper methods: `get_scan_path()`, `get_depth_limit()`, `get_ecosystems()`, `get_excluded_dirs()`, `should_include_globals()`
 
 #### `src/config/ecosystem.rs`
-- `Ecosystem` struct with `name`, `local`, `global` fields
-- `DiscoveredFolder` struct with `path`, `ecosystem`, `size_bytes`, `selected`
-- `load_ecosystems()` — loads all ecosystems from `ecosystems/*.json`
+- `Ecosystem` struct with `name`, `local`, `global`, `markers` fields
+- `DiscoveredFolder` struct with `path`, `ecosystem`, `size_bytes`, `selected`, `confidence`
+- `load_ecosystems()` — loads all ecosystems from `ecosystems/*.json`; returns error if no valid ecosystems found
 - `Ecosystem::matches_folder_with_globals()` — pattern matching for folder names
 
 #### `src/scanner/dir.rs`
 - `scan_directory()` — walks directory tree, finds matching folders
 - Uses `walkdir` for traversal
 - Supports exclude directories, exclude hidden, max depth parameters
-- Skips hidden dirs (`.git/`, `.svn/`, `.hg/`) and `.cache` directories
+- Skips hidden dirs (`.git/`, `.svn/`, `.hg/`) and `.cache` directories (merged with `--exclude` flag)
 - Tracks inodes to avoid duplicates (Unix)
 
 #### `src/scanner/size.rs`
@@ -112,6 +112,7 @@ everykill/
 
 #### `src/deleter.rs`
 - `delete_folders()` — deletes selected folders; supports dry-run
+- Uses `trash` crate for safe deletion with recovery support
 - `DeleteSummary` struct with `deleted_count`, `freed_bytes`, `errors`
 - `print_delete_summary()` — prints deletion summary (used in plain-text mode)
 
@@ -126,6 +127,8 @@ everykill/
 - `ScanState` enum: `Scanning` / `Complete` / `Error(String)`
 - `AppMode` enum: `Normal` / `FilterPopup` / `ConfirmDelete`
 - `ScanEvent` enum: `FolderFound` / `SizeUpdated` / `Done` / `Error` — sent from background scan thread
+- `show_status()` — sets status message with timestamp for auto-clear
+- `clear_expired_status()` — clears status messages after 5 seconds
 - State mutation methods: `toggle_selection`, `select_all`, `deselect_all`, `cursor_up/down`, `page_up/down`, `jump_to_top/bottom`, `toggle_ecosystem_filter`, etc.
 
 #### `src/ui/tui.rs`

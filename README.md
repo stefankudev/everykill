@@ -77,6 +77,7 @@ Mouse is also supported: click a row to focus it, click the `[ ]` checkbox to to
 - **Live progress**: Background scan thread streams results as they are found
 - **Ecosystem filter**: Popup to show/hide folders by ecosystem
 - **Dry-run mode**: Preview what would be deleted without touching disk
+- **Safe deletion**: Deleted folders go to system trash for easy recovery
 - **Mouse support**: Click and scroll in the TUI
 - **Flexible filtering**: Target specific ecosystems, exclude directories, depth limits
 - **Human-readable sizes**: Automatic unit formatting (B → EB)
